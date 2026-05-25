@@ -202,6 +202,9 @@
             font-weight: bold;
             transition: opacity 0.3s ease;
             margin-top: auto;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
         }
 
         .product-button:hover {
@@ -646,51 +649,39 @@
             <div class="gallery-counter" id="galleryCounter">1 / 1</div>
         </div>
 
-        <!-- Checkout Modal -->
+        <!-- Checkout Modal - UPDATED: Direct Redirect to Affiliate Link -->
         <div id="checkoutModal" class="gallery-modal">
             <span class="gallery-close" onclick="closeCheckout()">&times;</span>
             <div style="width: 90%; max-width: 500px; background: white; padding: 2rem; border-radius: 12px; max-height: 90vh; overflow-y: auto;">
-                <h2 style="color: #333; margin-bottom: 1.5rem;">🛒 Checkout</h2>
+                <h2 style="color: #333; margin-bottom: 1.5rem;">🛒 Continue to Purchase</h2>
                 
                 <div id="checkoutProductInfo" style="background: #f5f5f5; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;"></div>
 
-                <div class="form-group">
-                    <label style="font-weight: 600; color: #333;">Full Name *</label>
-                    <input type="text" id="checkoutName" placeholder="John Doe" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+                <div style="background: #e8f4f8; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #3498db;">
+                    <p style="margin: 0; color: #2c3e50; font-weight: 600; margin-bottom: 0.5rem;">✅ How It Works:</p>
+                    <ol style="margin: 0.5rem 0 0 0; padding-left: 20px; color: #34495e; font-size: 0.9rem;">
+                        <li>Enter your email for order tracking</li>
+                        <li>Click "Continue to Seller"</li>
+                        <li>Complete purchase on seller's website</li>
+                        <li>Track your order in "My Orders"</li>
+                    </ol>
                 </div>
 
                 <div class="form-group">
-                    <label style="font-weight: 600; color: #333;">Email *</label>
-                    <input type="email" id="checkoutEmail" placeholder="john@example.com" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+                    <label style="font-weight: 600; color: #333;">📧 Email (for tracking) *</label>
+                    <input type="email" id="checkoutEmail" placeholder="your@email.com" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
                 </div>
 
-                <div class="form-group">
-                    <label style="font-weight: 600; color: #333;">Phone *</label>
-                    <input type="tel" id="checkoutPhone" placeholder="+91 98765 43210" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
-                </div>
+                <button onclick="redirectToAffiliateLink()" style="width: 100%; background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white; border: none; padding: 1rem; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 0.75rem; font-size: 1.05rem;">🔗 Continue to Seller</button>
+                
+                <button onclick="closeCheckout()" style="width: 100%; background: #95a5a6; color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: bold; cursor: pointer;">❌ Cancel</button>
 
-                <div class="form-group">
-                    <label style="font-weight: 600; color: #333;">Quantity *</label>
-                    <input type="number" id="checkoutQuantity" value="1" min="1" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
-                </div>
-
-                <div class="form-group">
-                    <label style="font-weight: 600; color: #333;">Shipping Address *</label>
-                    <textarea id="checkoutAddress" placeholder="Full shipping address" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; font-family: inherit;"></textarea>
-                </div>
-
-                <div style="background: #f0f0f0; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                    <p style="margin: 0; color: #333;"><strong>Total Amount:</strong></p>
-                    <p style="margin: 0.5rem 0 0 0; font-size: 1.5rem; color: #e74c3c; font-weight: bold;" id="checkoutTotal">₹0</p>
-                </div>
-
-                <button onclick="placeOrder()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 1rem; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-bottom: 0.5rem;">✅ Place Order & Go to Seller</button>
-                <button onclick="closeCheckout()" style="width: 100%; background: #95a5a6; color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: bold; cursor: pointer;">Cancel</button>
+                <p style="font-size: 0.85rem; color: #999; text-align: center; margin-top: 1rem;">🔒 You will be redirected to the seller's secure website</p>
             </div>
         </div>
 
         <!-- Orders Tracking Bar (Scrollable) -->
-        <div id="ordersBar" style="display: none; position: fixed; bottom: 0; right: 0; width: 100%; max-width: 400px; max-height: 300px; background: white; border: 2px solid #667eea; border-radius: 12px 12px 0 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.2); z-index: 999; overflow-y: auto;">
+        <div id="ordersBar" style="display: none; position: fixed; bottom: 0; right: 0; width: 100%; max-width: 400px; max-height: 300px; background: white; border: 2px solid #667eea; border-radius: 1rem 1rem 0 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.2); overflow-y: auto; z-index: 1500;">
             <div style="padding: 1rem; border-bottom: 2px solid #667eea; position: sticky; top: 0; background: white;">
                 <h3 style="margin: 0; color: #333; display: flex; justify-content: space-between; align-items: center;">
                     📦 My Orders
@@ -703,7 +694,7 @@
         </div>
 
         <!-- Orders Toggle Button -->
-        <button id="ordersToggleBtn" onclick="toggleOrdersBar()" style="position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); z-index: 998; display: none;">
+        <button id="ordersToggleBtn" onclick="toggleOrdersBar()" style="position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 1rem; border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); z-index: 1400; transition: all 0.3s ease;">
             📦
         </button>
 
@@ -759,8 +750,8 @@
                         <div class="form-group" style="display: flex; gap: 1rem; align-items: center;">
                             <label style="margin: 0;">Edit Product (Optional):</label>
                             <input type="text" id="editProductId" placeholder="Paste product ID to edit">
-                            <button type="button" class="btn btn-secondary" onclick="loadProductForEdit()">Load</button>
-                            <button type="button" class="btn btn-secondary" onclick="resetProductForm()">Clear</button>
+                            <button type="button" class="btn btn-primary" onclick="loadProductForEdit()">Load</button>
+                            <button type="button" class="btn btn-danger" onclick="resetProductForm()">Clear</button>
                         </div>
 
                         <div class="form-row">
@@ -998,15 +989,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Ad Link (Click destination) *</label>
-                        <input type="url" id="sponsorLinkInput" placeholder="https://sponsor-website.com">
+                        <label>Ad Link *</label>
+                        <input type="url" id="sponsorLinkInput" placeholder="https://advertiser-link.com">
                     </div>
 
                     <button onclick="addSponsorAd()" class="btn btn-primary">➕ Add Sponsor Ad</button>
 
-                    <h4>Active Sponsor Ads</h4>
-                    <div class="ads-list" id="sponsorsList">
-                        <p style="color: #999;">Loading sponsor ads...</p>
+                    <h4 style="margin-top: 2rem;">Active Sponsor Ads</h4>
+                    <div class="ads-list" id="sponsorList">
+                        <p style="color: #999;">No sponsor ads yet</p>
                     </div>
                 </div>
             </div>
@@ -1014,254 +1005,626 @@
     </div>
 
     <script>
-        let currentGalleryImages = [];
+        // ========== GLOBAL VARIABLES ==========
+        let currentProduct = null;
         let currentGalleryIndex = 0;
-        let isAdminMode = false;
+        let allProducts = [];
+        let allOrders = [];
+        let userOrders = [];
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
+        // ========== INIT ==========
+        window.addEventListener('DOMContentLoaded', () => {
+            const adminEmail = sessionStorage.getItem('admin_logged_in');
+            if (adminEmail) {
+                document.getElementById('headerBtn').innerText = '🚪 Logout';
+                document.getElementById('headerBtn').onclick = () => logout();
+            }
             loadProducts();
-            setupFilterButtons();
+            loadOrders();
         });
 
-        // ========== PAGE NAVIGATION ==========
-
-        function goToAdmin() {
-            const password = prompt('Enter admin password:');
-            if (password === null) return;
-
-            const formData = new FormData();
-            formData.append('password', password);
-
-            fetch('/admin-login', {
-                method: 'POST',
-                body: formData
-            }).then(r => r.text()).then(text => {
-                if (text.includes('admin-dashboard')) {
-                    window.location.href = '/admin';
-                } else {
-                    alert('❌ Wrong password!');
-                }
-            }).catch(() => alert('❌ Error!'));
-        }
-
-        function logout() {
-            window.location.href = '/admin-logout';
-        }
-
-        // Check if admin page and show dashboard
-        if (window.location.pathname.includes('/admin')) {
-            document.getElementById('home-page').style.display = 'none';
-            document.getElementById('admin-dashboard').classList.add('active');
-            document.getElementById('headerBtn').textContent = '← Logout';
-            document.getElementById('headerBtn').className = 'logout-link';
-            document.getElementById('headerBtn').onclick = logout;
-            
-            // Load ads config for admin
-            setTimeout(() => {
-                loadAdsConfig();
-            }, 500);
-        }
-
-        // ========== TAB SWITCHING ==========
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            document.getElementById(tabName + '-tab').classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        function showMessage(elementId, message) {
-            const el = document.getElementById(elementId);
-            el.textContent = message;
-            el.style.display = 'block';
-            setTimeout(() => el.style.display = 'none', 4000);
-        }
-
-        function copyToClipboard(elementId) {
-            const element = document.getElementById(elementId);
-            const text = element.textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                alert('✅ Copied to clipboard!');
-            });
-        }
-
         // ========== HOME PAGE FUNCTIONS ==========
+        async function loadProducts() {
+            try {
+                const response = await fetch('/api/products?category=all');
+                allProducts = await response.json();
+                displayProducts(allProducts);
+            } catch (error) {
+                console.error('Failed to load products:', error);
+            }
+        }
 
-        function openGallery(images, index = 0) {
-            currentGalleryImages = images;
-            currentGalleryIndex = index;
-            document.getElementById('galleryImage').src = images[index];
-            document.getElementById('galleryCounter').textContent = index + 1 + ' / ' + images.length;
+        function displayProducts(products) {
+            const grid = document.getElementById('productsGrid');
+            if (products.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: #999;">No products available</p>';
+                return;
+            }
+
+            grid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <div class="product-images" onclick="openGallery(${allProducts.indexOf(product)})">
+                        <img src="${product.images[0]}" alt="${product.name}">
+                    </div>
+                    <div class="product-info">
+                        <h3>${product.name}</h3>
+                        <p>${product.description}</p>
+                        <div class="price-section">
+                            <div>
+                                <span class="price">${product.price}</span>
+                                ${product.original_price ? `<span class="original-price">${product.original_price}</span>` : ''}
+                            </div>
+                            ${product.original_price ? `<span class="discount">Save</span>` : ''}
+                        </div>
+                        <button class="product-button" onclick="openCheckoutFlow(${allProducts.indexOf(product)})">
+                            🛒 Buy Now
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterProducts(category) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (category === 'all') {
+                displayProducts(allProducts);
+            } else {
+                const filtered = allProducts.filter(p => p.category === category);
+                displayProducts(filtered);
+            }
+        }
+
+        // ========== GALLERY MODAL ==========
+        function openGallery(index) {
+            currentProduct = allProducts[index];
+            currentGalleryIndex = 0;
             document.getElementById('galleryModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            updateGalleryImage();
         }
 
         function closeGallery() {
             document.getElementById('galleryModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
+        }
+
+        function updateGalleryImage() {
+            const img = document.getElementById('galleryImage');
+            img.src = currentProduct.images[currentGalleryIndex];
+            document.getElementById('galleryCounter').innerText = `${currentGalleryIndex + 1} / ${currentProduct.images.length}`;
         }
 
         function changeImage(direction) {
             currentGalleryIndex += direction;
-            if (currentGalleryIndex < 0) currentGalleryIndex = currentGalleryImages.length - 1;
-            if (currentGalleryIndex >= currentGalleryImages.length) currentGalleryIndex = 0;
-            document.getElementById('galleryImage').src = currentGalleryImages[currentGalleryIndex];
-            document.getElementById('galleryCounter').textContent = (currentGalleryIndex + 1) + ' / ' + currentGalleryImages.length;
+            if (currentGalleryIndex < 0) currentGalleryIndex = currentProduct.images.length - 1;
+            if (currentGalleryIndex >= currentProduct.images.length) currentGalleryIndex = 0;
+            updateGalleryImage();
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (document.getElementById('galleryModal').style.display === 'flex') {
-                if (e.key === 'ArrowLeft') changeImage(-1);
-                if (e.key === 'ArrowRight') changeImage(1);
-                if (e.key === 'Escape') closeGallery();
-            }
-        });
+        // ========== CHECKOUT MODAL - DIRECT REDIRECT ==========
+        function openCheckoutFlow(index) {
+            closeGallery();
+            currentProduct = allProducts[index];
+            
+            const productInfo = document.getElementById('checkoutProductInfo');
+            productInfo.innerHTML = `
+                <div style="display: flex; gap: 1rem;">
+                    <img src="${currentProduct.images[0]}" alt="${currentProduct.name}" style="width: 80px; height: 80px; object-fit: contain; border-radius: 8px;">
+                    <div style="flex-grow: 1;">
+                        <strong style="display: block; color: #333; margin-bottom: 0.25rem;">${currentProduct.name}</strong>
+                        <span style="display: block; color: #e74c3c; font-size: 1.2rem; font-weight: bold;">${currentProduct.price}</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('checkoutEmail').value = '';
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
 
-        async function loadProducts(category = 'all') {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '<div class="loading">Loading amazing deals...</div>';
+        function closeCheckout() {
+            document.getElementById('checkoutModal').style.display = 'none';
+        }
+
+        // ========== REDIRECT TO AFFILIATE LINK ==========
+        async function redirectToAffiliateLink() {
+            const email = document.getElementById('checkoutEmail').value.trim();
+            
+            if (!email) {
+                alert('❌ Please enter your email');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('❌ Please enter a valid email');
+                return;
+            }
             
             try {
-                const url = category === 'all' ? '/api/products' : '/api/products?category=' + category;
-                const res = await fetch(url);
-                
-                if (!res.ok) {
-                    console.error('Response status:', res.status);
-                    grid.innerHTML = '<div class="loading">⚠️ Backend not responding. Please refresh page.</div>';
-                    return;
-                }
-                
-                const text = await res.text();
-                
-                // Check if response is JSON
-                if (!text || text.trim() === '') {
-                    grid.innerHTML = '<div class="loading">No products found. Add some from admin panel!</div>';
-                    return;
-                }
-                
-                if (text.startsWith('<')) {
-                    console.error('Received HTML instead of JSON:', text.substring(0, 100));
-                    grid.innerHTML = '<div class="loading">⚠️ Server error. Backend not configured properly.</div>';
-                    return;
-                }
-                
-                const products = JSON.parse(text);
-                
-                if (!Array.isArray(products) || products.length === 0) {
-                    grid.innerHTML = '<div class="loading">No products found. Add some from admin panel!</div>';
-                    return;
-                }
-                
-                grid.innerHTML = products.map(p => {
-                    const images = Array.isArray(p.images) ? p.images : [p.images];
-                    const firstImage = images[0] || 'https://via.placeholder.com/300x200?text=No+Image';
-                    
-                    return `
-                        <div class="product-card" onclick="openGallery(${JSON.stringify(images)})">
-                            <div class="product-images">
-                                <img src="${firstImage}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/300x200?text=Broken'">
-                            </div>
-                            <div class="product-info">
-                                <h3>${p.name}</h3>
-                                <p>${p.description || 'Amazing product with great features.'}</p>
-                                <div class="price-section">
-                                    <div>
-                                        <div class="price">${p.price}</div>
-                                        ${p.original_price ? '<div class="original-price">' + p.original_price + '</div>' : ''}
-                                    </div>
-                                    ${p.original_price ? '<div class="discount">Save ' + calculateDiscount(p.original_price, p.price) + '</div>' : ''}
-                                </div>
-                                <button onclick="openCheckoutById('${p.id}'); event.stopPropagation();" class="product-button" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 0.75rem; text-decoration: none; border-radius: 8px; font-weight: bold; transition: opacity 0.3s ease; margin-top: auto; border: none; cursor: pointer; width: 100%;">🛒 Buy Now</button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (error) {
-                console.error('Error loading products:', error);
-                grid.innerHTML = '<div class="loading">⚠️ Failed to load products. Backend issue or network error.</div>';
-            }
-        }
-
-        function calculateDiscount(original, current) {
-            try {
-                const origNum = parseFloat(original.replace(/[₹$,]/g, ''));
-                const currNum = parseFloat(current.replace(/[₹$,]/g, ''));
-                if (isNaN(origNum) || isNaN(currNum) || origNum <= currNum) return '';
-                const discount = Math.round(((origNum - currNum) / origNum) * 100);
-                return discount + '% OFF';
-            } catch (e) {
-                return '';
-            }
-        }
-
-        function filterProducts(category) {
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            loadProducts(category);
-        }
-
-        function setupFilterButtons() {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    const category = e.target.dataset.category;
-                    loadProducts(category);
+                const orderResponse = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customer_name: email.split('@')[0],
+                        customer_email: email,
+                        product_id: currentProduct.id,
+                        quantity: 1,
+                        shipping_address: 'Pending - Will be collected on seller site'
+                    })
                 });
-            });
+                
+                if (orderResponse.ok) {
+                    const order = await orderResponse.json();
+                    localStorage.setItem('user_email', email);
+                    
+                    alert('✅ Order created!\n\nTracking ID: ' + order.order.id + '\n\nRedirecting to seller...');
+                    closeCheckout();
+                    loadOrders();
+                    
+                    setTimeout(() => {
+                        window.open(currentProduct.affiliate_link, '_blank');
+                    }, 500);
+                } else {
+                    alert('⚠️ Could not create order. Redirecting to seller...');
+                    window.open(currentProduct.affiliate_link, '_blank');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Redirecting to seller...');
+                window.open(currentProduct.affiliate_link, '_blank');
+            }
+        }
+
+        // ========== ORDERS TRACKING ==========
+        async function loadOrders() {
+            try {
+                const response = await fetch('/api/orders');
+                allOrders = await response.json();
+                displayUserOrders();
+            } catch (error) {
+                console.error('Failed to load orders:', error);
+            }
+        }
+
+        function displayUserOrders() {
+            const userEmail = localStorage.getItem('user_email') || '';
+            userOrders = allOrders.filter(o => o.customer_email === userEmail || o.customer_name === userEmail.split('@')[0]);
+            
+            const ordersContent = document.getElementById('ordersBarContent');
+            
+            if (userOrders.length === 0) {
+                ordersContent.innerHTML = '<p style="color: #999; text-align: center;">No orders yet</p>';
+                return;
+            }
+            
+            ordersContent.innerHTML = userOrders.map(order => `
+                <div style="background: white; padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; margin-bottom: 0.75rem;">
+                    <p style="margin: 0; font-weight: 600; color: #333; font-size: 0.9rem;">${order.product_name}</p>
+                    <p style="margin: 0.25rem 0; font-size: 0.85rem; color: #666;">Order: ${order.id}</p>
+                    <p style="margin: 0.25rem 0; font-size: 0.85rem; color: #666;">Qty: ${order.quantity}</p>
+                    <span style="display: inline-block; background: ${order.status === 'delivered' ? '#27ae60' : order.status === 'shipped' ? '#3498db' : '#f39c12'}; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: bold; margin-top: 0.5rem;">
+                        ${order.status.toUpperCase()}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function toggleOrdersBar() {
+            const bar = document.getElementById('ordersBar');
+            const btn = document.getElementById('ordersToggleBtn');
+            
+            if (bar.style.display === 'none') {
+                bar.style.display = 'block';
+                btn.style.display = 'none';
+            } else {
+                bar.style.display = 'none';
+                btn.style.display = 'block';
+            }
         }
 
         // ========== ADMIN FUNCTIONS ==========
+        function goToAdmin() {
+            const pwd = prompt('Enter Admin Password:');
+            if (!pwd) return;
+            
+            fetch('/admin-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `password=${encodeURIComponent(pwd)}`
+            })
+            .then(response => {
+                if (response.ok) {
+                    sessionStorage.setItem('admin_logged_in', 'true');
+                    document.getElementById('home-page').style.display = 'none';
+                    document.getElementById('admin-dashboard').classList.add('active');
+                    document.getElementById('headerBtn').innerText = '🚪 Logout';
+                    document.getElementById('headerBtn').onclick = () => logout();
+                    loadProductsForAdmin();
+                    loadOrdersForAdmin();
+                    loadTemplatesForAdmin();
+                    loadMusicForAdmin();
+                    loadAdsConfig();
+                    loadSponsorAdsForAdmin();
+                } else {
+                    alert('❌ Wrong password!');
+                }
+            });
+        }
 
-        async function loadAdsConfig() {
+        function logout() {
+            sessionStorage.removeItem('admin_logged_in');
+            document.getElementById('home-page').style.display = 'block';
+            document.getElementById('admin-dashboard').classList.remove('active');
+            document.getElementById('headerBtn').innerText = '🔒 Admin';
+            document.getElementById('headerBtn').onclick = () => goToAdmin();
+            location.reload();
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ========== ADMIN - PRODUCTS ==========
+        async function addProduct(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('productName').value;
+            const price = document.getElementById('productPrice').value;
+            const link = document.getElementById('productLink').value;
+            const images = document.getElementById('productImages').files;
+            
+            if (!name || !price || !link || images.length === 0) {
+                showError('productError', 'All fields required!');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('price', price);
+            formData.append('affiliate_link', link);
+            formData.append('category', document.getElementById('productCategory').value);
+            formData.append('description', document.getElementById('productDescription').value);
+            formData.append('original_price', document.getElementById('productOriginalPrice').value);
+            
+            for (let i = 0; i < images.length; i++) {
+                formData.append('images', images[i]);
+            }
+            
+            const editId = document.getElementById('editProductId').value;
+            const method = editId ? 'PUT' : 'POST';
+            const url = editId ? `/api/products/${editId}` : '/api/products';
+            
             try {
-                const res = await fetch('/api/ads/config');
+                const response = await fetch(url, { method, body: formData });
+                const data = await response.json();
                 
-                if (!res.ok) {
-                    console.error('Failed to load ads config:', res.status);
-                    return;
+                if (response.ok) {
+                    showSuccess('productSuccess', editId ? 'Product updated!' : 'Product added!');
+                    document.getElementById('productForm').reset();
+                    document.getElementById('editProductId').value = '';
+                    document.getElementById('submitBtn').innerText = '✅ Add Product';
+                    loadProductsForAdmin();
+                    loadProducts();
+                } else {
+                    showError('productError', data.error || 'Error adding product');
                 }
-                
-                const text = await res.text();
-                
-                if (!text || text.startsWith('<')) {
-                    console.error('Received HTML instead of JSON');
-                    return;
-                }
-                
-                const config = JSON.parse(text);
-                
-                document.getElementById('adsenseEnabled').checked = config.google_adsense_enabled;
-                document.getElementById('publisherIdInput').value = config.google_publisher_id || '';
-                
-                if (config.google_publisher_id) {
-                    document.getElementById('adsenseTagPreview').textContent = 
-                        '<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + config.google_publisher_id + '"><\/script>';
-                }
-                
-                loadSponsorAds(config.sponsor_ads || []);
             } catch (error) {
-                console.error('Error loading ads config:', error);
+                showError('productError', 'Network error: ' + error.message);
             }
         }
 
+        async function loadProductsForAdmin() {
+            try {
+                const response = await fetch('/api/products');
+                const products = await response.json();
+                const select = document.getElementById('orderProductSelect');
+                select.innerHTML = '<option value="">Select a product</option>' + 
+                    products.map(p => `<option value="${p.id}">${p.name} - ${p.price}</option>`).join('');
+            } catch (error) {
+                console.error('Failed to load products:', error);
+            }
+        }
+
+        function loadProductForEdit() {
+            const id = document.getElementById('editProductId').value;
+            if (!id) {
+                alert('Please enter product ID');
+                return;
+            }
+            
+            fetch(`/api/products/${id}`)
+                .then(r => r.json())
+                .then(product => {
+                    document.getElementById('productName').value = product.name;
+                    document.getElementById('productPrice').value = product.price;
+                    document.getElementById('productOriginalPrice').value = product.original_price || '';
+                    document.getElementById('productCategory').value = product.category;
+                    document.getElementById('productDescription').value = product.description;
+                    document.getElementById('productLink').value = product.affiliate_link;
+                    document.getElementById('submitBtn').innerText = '✅ Update Product';
+                })
+                .catch(() => alert('Product not found'));
+        }
+
+        function resetProductForm() {
+            document.getElementById('productForm').reset();
+            document.getElementById('editProductId').value = '';
+            document.getElementById('submitBtn').innerText = '✅ Add Product';
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('Delete this product?')) return;
+            
+            try {
+                const response = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    showSuccess('productSuccess', 'Product deleted!');
+                    loadProductsForAdmin();
+                    loadProducts();
+                }
+            } catch (error) {
+                showError('productError', 'Delete failed: ' + error.message);
+            }
+        }
+
+        // ========== ADMIN - ORDERS ==========
+        async function createOrder() {
+            const name = document.getElementById('orderCustomerName').value;
+            const email = document.getElementById('orderCustomerEmail').value;
+            const phone = document.getElementById('orderCustomerPhone').value;
+            const productId = document.getElementById('orderProductSelect').value;
+            const quantity = document.getElementById('orderQuantity').value;
+            const address = document.getElementById('orderAddress').value;
+            
+            if (!name || !productId) {
+                showError('orderError', 'Name and product required!');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customer_name: name,
+                        customer_email: email,
+                        customer_phone: phone,
+                        product_id: productId,
+                        quantity,
+                        shipping_address: address
+                    })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    showSuccess('orderSuccess', 'Order created! ID: ' + data.order.id);
+                    document.getElementById('orderCustomerName').value = '';
+                    document.getElementById('orderCustomerEmail').value = '';
+                    document.getElementById('orderCustomerPhone').value = '';
+                    document.getElementById('orderProductSelect').value = '';
+                    document.getElementById('orderQuantity').value = '1';
+                    document.getElementById('orderAddress').value = '';
+                    loadOrdersForAdmin();
+                } else {
+                    showError('orderError', data.error || 'Failed to create order');
+                }
+            } catch (error) {
+                showError('orderError', 'Error: ' + error.message);
+            }
+        }
+
+        async function loadOrdersForAdmin() {
+            try {
+                const response = await fetch('/api/orders');
+                const orders = await response.json();
+                const list = document.getElementById('ordersList');
+                
+                if (orders.length === 0) {
+                    list.innerHTML = '<p style="color: #999;">No orders</p>';
+                    return;
+                }
+                
+                list.innerHTML = orders.map(order => `
+                    <div class="ad-card">
+                        <div class="ad-card-info">
+                            <strong>${order.customer_name}</strong>
+                            <small>📦 ${order.product_name} (x${order.quantity})</small>
+                            <small>📱 ${order.customer_phone || 'N/A'}</small>
+                            <small>🆔 ${order.id}</small>
+                            <span class="badge ${order.status === 'delivered' ? 'active' : ''}">${order.status}</span>
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteOrder('${order.id}')">🗑️ Delete</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load orders:', error);
+            }
+        }
+
+        async function deleteOrder(id) {
+            if (!confirm('Delete this order?')) return;
+            
+            try {
+                const response = await fetch(`/api/orders/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    loadOrdersForAdmin();
+                }
+            } catch (error) {
+                console.error('Delete failed:', error);
+            }
+        }
+
+        function trackOrder() {
+            const trackingNum = document.getElementById('trackingInput').value;
+            if (!trackingNum) {
+                alert('Enter tracking number');
+                return;
+            }
+            
+            fetch(`/api/orders/track/${trackingNum}`)
+                .then(r => r.json())
+                .then(order => {
+                    const result = document.getElementById('trackingResult');
+                    result.style.display = 'block';
+                    document.getElementById('trackingStatus').innerText = `Order #${order.id}`;
+                    document.getElementById('trackingDetails').innerHTML = `
+                        <p><strong>Customer:</strong> ${order.customer_name}</p>
+                        <p><strong>Product:</strong> ${order.product_name}</p>
+                        <p><strong>Status:</strong> ${order.status.toUpperCase()}</p>
+                        <p><strong>Quantity:</strong> ${order.quantity}</p>
+                        <p><strong>Created:</strong> ${new Date(order.created_at).toLocaleDateString()}</p>
+                    `;
+                })
+                .catch(() => alert('Order not found'));
+        }
+
+        // ========== ADMIN - TEMPLATES ==========
+        async function addTemplate() {
+            const name = document.getElementById('templateName').value;
+            const color1 = document.getElementById('templateColor1').value;
+            const color2 = document.getElementById('templateColor2').value;
+            
+            if (!name) {
+                showError('templateError', 'Template name required!');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/templates', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        colors: { primary: color1, secondary: color2 }
+                    })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    showSuccess('templateSuccess', 'Template created!');
+                    document.getElementById('templateName').value = '';
+                    loadTemplatesForAdmin();
+                } else {
+                    showError('templateError', data.error);
+                }
+            } catch (error) {
+                showError('templateError', error.message);
+            }
+        }
+
+        async function loadTemplatesForAdmin() {
+            try {
+                const response = await fetch('/api/templates');
+                const templates = await response.json();
+                const list = document.getElementById('templatesList');
+                
+                if (templates.length === 0) {
+                    list.innerHTML = '<p style="color: #999;">No templates</p>';
+                    return;
+                }
+                
+                list.innerHTML = templates.map(t => `
+                    <div class="ad-card">
+                        <div class="ad-card-info">
+                            <strong>${t.name}</strong>
+                            <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+                                <div style="width: 30px; height: 30px; background: ${t.colors.primary}; border-radius: 4px;"></div>
+                                <div style="width: 30px; height: 30px; background: ${t.colors.secondary}; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteTemplate('${t.id}')">🗑️ Delete</button>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load templates:', error);
+            }
+        }
+
+        async function deleteTemplate(id) {
+            if (!confirm('Delete this template?')) return;
+            
+            try {
+                const response = await fetch(`/api/templates/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    loadTemplatesForAdmin();
+                }
+            } catch (error) {
+                console.error('Delete failed:', error);
+            }
+        }
+
+        // ========== ADMIN - MUSIC ==========
+        async function uploadMusic() {
+            const file = document.getElementById('musicFile').files[0];
+            if (!file) {
+                showError('musicError', 'Select a music file!');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('music', file);
+            
+            try {
+                const response = await fetch('/api/music', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    showSuccess('musicSuccess', 'Music uploaded!');
+                    document.getElementById('musicFile').value = '';
+                    loadMusicForAdmin();
+                } else {
+                    showError('musicError', data.error);
+                }
+            } catch (error) {
+                showError('musicError', error.message);
+            }
+        }
+
+        async function loadMusicForAdmin() {
+            try {
+                const response = await fetch('/api/music');
+                const files = await response.json();
+                const list = document.getElementById('musicList');
+                
+                if (files.length === 0) {
+                    list.innerHTML = '<p style="color: #999;">No music files</p>';
+                    return;
+                }
+                
+                list.innerHTML = files.map(f => `
+                    <div class="ad-card">
+                        <div class="ad-card-info">
+                            <strong>🎵 ${f.name}</strong>
+                            <audio controls style="width: 100%; margin-top: 0.5rem;">
+                                <source src="${f.url}" type="audio/mpeg">
+                            </audio>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load music:', error);
+            }
+        }
+
+        // ========== ADMIN - ADS ==========
         async function saveAdsenseConfig() {
             const enabled = document.getElementById('adsenseEnabled').checked;
             const publisherId = document.getElementById('publisherIdInput').value;
             
             if (enabled && !publisherId) {
-                showMessage('adsenseError', '❌ Please enter Publisher ID');
+                showError('adsenseError', 'Enter Publisher ID!');
                 return;
             }
             
             try {
-                const res = await fetch('/api/ads/config', {
+                const response = await fetch('/api/ads/config', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -1270,15 +1633,37 @@
                     })
                 });
                 
-                if (res.ok) {
-                    showMessage('adsenseSuccess', '✅ Saved!');
-                    loadAdsConfig();
-                } else {
-                    showMessage('adsenseError', '❌ Error');
+                if (response.ok) {
+                    showSuccess('adsenseSuccess', 'AdSense config saved!');
+                    updateAdsensePreview();
                 }
             } catch (error) {
-                console.error('Error:', error);
-                showMessage('adsenseError', '❌ Error');
+                showError('adsenseError', error.message);
+            }
+        }
+
+        function updateAdsensePreview() {
+            const publisherId = document.getElementById('publisherIdInput').value || 'ca-pub-xxxxxxxxxxxxxxxx';
+            const code = `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}"><\/script>`;
+            document.getElementById('adsenseTagPreview').innerText = code;
+        }
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Copied to clipboard!');
+            });
+        }
+
+        async function loadAdsConfig() {
+            try {
+                const response = await fetch('/api/ads/config');
+                const config = await response.json();
+                document.getElementById('adsenseEnabled').checked = config.google_adsense_enabled;
+                document.getElementById('publisherIdInput').value = config.google_publisher_id;
+                updateAdsensePreview();
+            } catch (error) {
+                console.error('Failed to load ads config:', error);
             }
         }
 
@@ -1289,728 +1674,89 @@
             const position = document.getElementById('sponsorPositionSelect').value;
             
             if (!name || !image || !link) {
-                showMessage('sponsorError', '❌ Fill all fields');
+                showError('sponsorError', 'All fields required!');
                 return;
             }
             
             try {
-                const res = await fetch('/api/ads/sponsor', {
+                const response = await fetch('/api/ads/sponsor', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         company_name: name,
                         image_url: image,
                         ad_link: link,
-                        position: position
+                        position
                     })
                 });
                 
-                if (res.ok) {
-                    showMessage('sponsorSuccess', '✅ Added!');
+                const data = await response.json();
+                if (response.ok) {
+                    showSuccess('sponsorSuccess', 'Sponsor ad added!');
                     document.getElementById('sponsorNameInput').value = '';
                     document.getElementById('sponsorImageInput').value = '';
                     document.getElementById('sponsorLinkInput').value = '';
-                    loadAdsConfig();
+                    loadSponsorAdsForAdmin();
                 } else {
-                    showMessage('sponsorError', '❌ Error');
+                    showError('sponsorError', data.error);
                 }
             } catch (error) {
-                console.error('Error:', error);
-                showMessage('sponsorError', '❌ Error');
+                showError('sponsorError', error.message);
             }
         }
 
-        function loadSponsorAds(sponsors) {
-            const list = document.getElementById('sponsorsList');
-            
-            if (!sponsors || sponsors.length === 0) {
-                list.innerHTML = '<p style="color: #999;">No sponsor ads yet</p>';
-                return;
-            }
-            
-            list.innerHTML = sponsors.map(sponsor => `
-                <div class="ad-card">
-                    <div class="ad-card-info">
-                        <strong>🏢 ${sponsor.company_name}</strong>
-                        <small>Position: ${sponsor.position.replace('_', ' ')}</small>
-                        <small><a href="${sponsor.ad_link}" target="_blank" style="color: #667eea;">${sponsor.ad_link}</a></small>
-                        <span class="badge active">🟢 Active</span>
+        async function loadSponsorAdsForAdmin() {
+            try {
+                const response = await fetch('/api/ads/config');
+                const config = await response.json();
+                const list = document.getElementById('sponsorList');
+                
+                if (config.sponsor_ads.length === 0) {
+                    list.innerHTML = '<p style="color: #999;">No sponsor ads</p>';
+                    return;
+                }
+                
+                list.innerHTML = config.sponsor_ads.map(ad => `
+                    <div class="ad-card">
+                        <div class="ad-card-info">
+                            <strong>${ad.company_name}</strong>
+                            <small>📍 ${ad.position}</small>
+                            <img src="${ad.image_url}" alt="${ad.company_name}" style="width: 100%; max-height: 100px; object-fit: cover; margin-top: 0.5rem; border-radius: 4px;">
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteSponsorAd('${ad.id}')">🗑️ Delete</button>
                     </div>
-                    <button class="btn btn-danger" onclick="deleteSponsorAd('${sponsor.id}')">🗑️ Delete</button>
-                </div>
-            `).join('');
+                `).join('');
+            } catch (error) {
+                console.error('Failed to load sponsor ads:', error);
+            }
         }
 
-        async function deleteSponsorAd(sponsorId) {
-            if (!confirm('Delete this ad?')) return;
+        async function deleteSponsorAd(id) {
+            if (!confirm('Delete this sponsor ad?')) return;
             
             try {
-                const res = await fetch('/api/ads/sponsor/' + sponsorId, { method: 'DELETE' });
-                if (res.ok) {
-                    showMessage('sponsorSuccess', '✅ Deleted!');
-                    loadAdsConfig();
+                const response = await fetch(`/api/ads/sponsor/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    loadSponsorAdsForAdmin();
                 }
             } catch (error) {
-                showMessage('sponsorError', '❌ Error');
+                console.error('Delete failed:', error);
             }
         }
 
-        async function addProduct(event) {
-            event.preventDefault();
-
-            const name = document.getElementById('productName').value;
-            const price = document.getElementById('productPrice').value;
-            const affiliate_link = document.getElementById('productLink').value;
-            const category = document.getElementById('productCategory').value;
-            const description = document.getElementById('productDescription').value;
-            const original_price = document.getElementById('productOriginalPrice').value;
-            const imagesInput = document.getElementById('productImages');
-
-            if (!name || !price || !affiliate_link || !imagesInput.files.length) {
-                alert('❌ Fill all fields and select images');
-                return;
-            }
-
-            if (imagesInput.files.length > 5) {
-                alert('❌ Max 5 images');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('price', price);
-            formData.append('affiliate_link', affiliate_link);
-            formData.append('category', category);
-            formData.append('description', description);
-            formData.append('original_price', original_price);
-
-            for (let i = 0; i < imagesInput.files.length; i++) {
-                formData.append('images', imagesInput.files[i]);
-            }
-
-            try {
-                const method = editingProductId ? 'PUT' : 'POST';
-                const url = editingProductId ? '/api/products/' + editingProductId : '/api/products';
-
-                const res = await fetch(url, {
-                    method: method,
-                    body: formData
-                });
-
-                if (res.ok) {
-                    showMessage('productSuccess', editingProductId ? '✅ Updated!' : '✅ Added!');
-                    resetProductForm();
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    const err = await res.json();
-                    showMessage('productError', '❌ ' + (err.error || 'Error'));
-                }
-            } catch (e) {
-                showMessage('productError', '❌ Error');
-            }
+        // ========== UTILITY FUNCTIONS ==========
+        function showSuccess(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerText = message;
+            element.style.display = 'block';
+            setTimeout(() => element.style.display = 'none', 3000);
         }
 
-        let editingProductId = null;
-
-        async function loadProductForEdit() {
-            const pid = document.getElementById('editProductId').value;
-            if (!pid) {
-                alert('❌ Enter product ID');
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/products/' + pid);
-                if (!res.ok) {
-                    alert('❌ Not found');
-                    return;
-                }
-                const prod = await res.json();
-                
-                editingProductId = pid;
-                document.getElementById('productName').value = prod.name;
-                document.getElementById('productPrice').value = prod.price;
-                document.getElementById('productOriginalPrice').value = prod.original_price || '';
-                document.getElementById('productCategory').value = prod.category;
-                document.getElementById('productDescription').value = prod.description;
-                document.getElementById('productLink').value = prod.affiliate_link;
-                document.getElementById('submitBtn').textContent = '✏️ Update';
-                alert('✅ Loaded! Update and submit');
-            } catch (e) {
-                alert('❌ Error');
-            }
-        }
-
-        function resetProductForm() {
-            editingProductId = null;
-            document.getElementById('productForm').reset();
-            document.getElementById('editProductId').value = '';
-            document.getElementById('submitBtn').textContent = '✅ Add Product';
-        }
-
-        async function addTemplate() {
-            const name = document.getElementById('templateName').value;
-            const color1 = document.getElementById('templateColor1').value;
-            const color2 = document.getElementById('templateColor2').value;
-
-            if (!name) {
-                showMessage('templateError', '❌ Name required');
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/templates', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: name,
-                        colors: { primary: color1, secondary: color2 }
-                    })
-                });
-
-                if (res.ok) {
-                    showMessage('templateSuccess', '✅ Created!');
-                    document.getElementById('templateName').value = '';
-                    loadTemplates();
-                }
-            } catch (e) {
-                showMessage('templateError', '❌ Error');
-            }
-        }
-
-        async function loadTemplates() {
-            try {
-                const res = await fetch('/api/templates');
-                const templates = await res.json();
-
-                const list = document.getElementById('templatesList');
-                if (!templates || templates.length === 0) {
-                    list.innerHTML = '<p style="color: #999;">No templates</p>';
-                    return;
-                }
-
-                list.innerHTML = templates.map(t => `
-                    <div class="ad-card">
-                        <div class="ad-card-info">
-                            <strong>🎨 ${t.name}</strong>
-                            <div style="margin-top: 0.5rem;">
-                                <div style="width: 40px; height: 20px; background: ${t.colors.primary}; display: inline-block; margin-right: 5px; border-radius: 4px;"></div>
-                                <div style="width: 40px; height: 20px; background: ${t.colors.secondary}; display: inline-block; border-radius: 4px;"></div>
-                            </div>
-                        </div>
-                        <button class="btn btn-danger" onclick="deleteTemplate('${t.id}')">🗑️ Delete</button>
-                    </div>
-                `).join('');
-            } catch (e) {}
-        }
-
-        async function deleteTemplate(tid) {
-            if (!confirm('Delete?')) return;
-            try {
-                await fetch('/api/templates/' + tid, { method: 'DELETE' });
-                showMessage('templateSuccess', '✅ Deleted!');
-                loadTemplates();
-            } catch (e) {
-                showMessage('templateError', '❌ Error');
-            }
-        }
-
-        async function uploadMusic() {
-            const file = document.getElementById('musicFile').files[0];
-            if (!file) {
-                showMessage('musicError', '❌ Select file');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('music', file);
-
-            try {
-                const res = await fetch('/api/music', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (res.ok) {
-                    showMessage('musicSuccess', '✅ Uploaded!');
-                    document.getElementById('musicFile').value = '';
-                    loadMusicFiles();
-                } else {
-                    const err = await res.json();
-                    showMessage('musicError', '❌ ' + (err.error || 'Error'));
-                }
-            } catch (e) {
-                showMessage('musicError', '❌ Error');
-            }
-        }
-
-        async function loadMusicFiles() {
-            try {
-                const res = await fetch('/api/music');
-                const files = await res.json();
-
-                const list = document.getElementById('musicList');
-                if (!files || files.length === 0) {
-                    list.innerHTML = '<p style="color: #999;">No music</p>';
-                    return;
-                }
-
-                list.innerHTML = files.map(f => `
-                    <div class="ad-card">
-                        <div class="ad-card-info">
-                            <strong>🎵 ${f.name}</strong>
-                            <audio style="width: 100%; margin-top: 0.5rem;" controls>
-                                <source src="${f.url}" type="audio/mpeg">
-                            </audio>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (e) {}
-        }
-
-        // ========== CHECKOUT & ORDERS ==========
-
-        let currentProduct = null;
-
-        async function openCheckoutById(productId) {
-            try {
-                // Get current products from DOM or fetch
-                const res = await fetch('/api/products');
-                const products = await res.json();
-                const product = products.find(p => p.id === productId);
-                
-                if (!product) {
-                    alert('❌ Product not found');
-                    return;
-                }
-
-                openCheckout(product);
-            } catch (e) {
-                alert('❌ Error loading product details');
-            }
-        }
-
-        function openCheckout(product) {
-            currentProduct = product;
-            
-            const info = document.getElementById('checkoutProductInfo');
-            info.innerHTML = `
-                <p><strong>${product.name}</strong></p>
-                <p>Price: <span style="color: #e74c3c; font-weight: bold;">${product.price}</span></p>
-            `;
-            
-            document.getElementById('checkoutQuantity').value = 1;
-            updateCheckoutTotal();
-            document.getElementById('checkoutModal').style.display = 'flex';
-        }
-
-        function closeCheckout() {
-            document.getElementById('checkoutModal').style.display = 'none';
-            document.getElementById('checkoutName').value = '';
-            document.getElementById('checkoutEmail').value = '';
-            document.getElementById('checkoutPhone').value = '';
-            document.getElementById('checkoutAddress').value = '';
-        }
-
-        function updateCheckoutTotal() {
-            if (!currentProduct) return;
-            
-            const quantity = parseInt(document.getElementById('checkoutQuantity').value) || 1;
-            const price = parseFloat(currentProduct.price.replace('₹', '').trim());
-            const total = price * quantity;
-            
-            document.getElementById('checkoutTotal').textContent = '₹' + total.toLocaleString();
-        }
-
-        document.addEventListener('change', (e) => {
-            if (e.target.id === 'checkoutQuantity') {
-                updateCheckoutTotal();
-            }
-        });
-
-        async function placeOrder() {
-            const name = document.getElementById('checkoutName').value;
-            const email = document.getElementById('checkoutEmail').value;
-            const phone = document.getElementById('checkoutPhone').value;
-            const quantity = document.getElementById('checkoutQuantity').value;
-            const address = document.getElementById('checkoutAddress').value;
-
-            if (!name || !email || !phone || !quantity || !address) {
-                alert('❌ Please fill all fields');
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        customer_name: name,
-                        customer_email: email,
-                        customer_phone: phone,
-                        product_id: currentProduct.id,
-                        quantity: quantity,
-                        shipping_address: address
-                    })
-                });
-
-                if (res.ok) {
-                    const result = await res.json();
-                    
-                    // Get affiliate link
-                    const affiliateLink = currentProduct.affiliate_link;
-                    
-                    // Show success message with tracking number
-                    const trackingMsg = `✅ Order placed successfully!\n\nTracking Number: ${result.order.tracking_number}\n\nYou will be redirected to the seller in 5 seconds...\n\nYour order is saved. Check status in 'My Orders' anytime.`;
-                    alert(trackingMsg);
-                    
-                    closeCheckout();
-                    loadUserOrders();
-                    
-                    // Show orders bar
-                    document.getElementById('ordersBar').style.display = 'block';
-                    document.getElementById('ordersToggleBtn').style.display = 'block';
-                    
-                    // Redirect to affiliate link after 5 seconds
-                    setTimeout(() => {
-                        if (affiliateLink && affiliateLink.trim()) {
-                            console.log('Redirecting to:', affiliateLink);
-                            window.open(affiliateLink, '_blank');
-                        } else {
-                            console.warn('No affiliate link found');
-                            alert('⚠️ No affiliate link available for this product');
-                        }
-                    }, 5000);
-                } else {
-                    alert('❌ Error placing order');
-                }
-            } catch (e) {
-                console.error('Error:', e);
-                alert('❌ Error: ' + e.message);
-            }
-        }
-
-        async function loadUserOrders() {
-            try {
-                const res = await fetch('/api/orders');
-                
-                // Check if response is OK
-                if (!res.ok) {
-                    console.warn('Orders endpoint returned:', res.status);
-                    const content = document.getElementById('ordersBarContent');
-                    if (content) {
-                        content.innerHTML = '<p style="color: #999; text-align: center;">No orders yet</p>';
-                    }
-                    document.getElementById('ordersToggleBtn').style.display = 'none';
-                    return;
-                }
-                
-                const text = await res.text();
-                
-                // Check if response is valid JSON
-                if (!text || text.startsWith('<')) {
-                    console.warn('Received HTML instead of JSON');
-                    const content = document.getElementById('ordersBarContent');
-                    if (content) {
-                        content.innerHTML = '<p style="color: #999; text-align: center;">No orders yet</p>';
-                    }
-                    document.getElementById('ordersToggleBtn').style.display = 'none';
-                    return;
-                }
-                
-                const orders = JSON.parse(text);
-
-                const content = document.getElementById('ordersBarContent');
-                
-                if (!orders || orders.length === 0) {
-                    content.innerHTML = '<p style="color: #999; text-align: center;">No orders yet</p>';
-                    document.getElementById('ordersToggleBtn').style.display = 'none';
-                    return;
-                }
-
-                document.getElementById('ordersToggleBtn').style.display = 'block';
-
-                const statusEmoji = {
-                    'pending': '⏳',
-                    'confirmed': '✅',
-                    'shipped': '🚚',
-                    'delivered': '📦',
-                    'cancelled': '❌'
-                };
-
-                const statusColors = {
-                    'pending': '#ff9800',
-                    'confirmed': '#2196F3',
-                    'shipped': '#9C27B0',
-                    'delivered': '#4CAF50',
-                    'cancelled': '#f44336'
-                };
-
-                content.innerHTML = orders.map(o => `
-                    <div style="border: 1px solid #ddd; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 8px; font-size: 0.9rem;">
-                        <p style="margin: 0 0 0.5rem 0; font-weight: bold; color: #333;">
-                            ${statusEmoji[o.status]} ${o.product_name}
-                        </p>
-                        <p style="margin: 0 0 0.5rem 0; color: #666; font-size: 0.85rem;">
-                            Order: ${o.id}
-                        </p>
-                        <p style="margin: 0 0 0.5rem 0; color: #666; font-size: 0.85rem;">
-                            Qty: ${o.quantity} | Total: ₹${Math.round(o.total_price)}
-                        </p>
-                        <p style="margin: 0 0 0.5rem 0; color: #666; font-size: 0.85rem;">
-                            📍 ${o.tracking_number}
-                        </p>
-                        <div style="background: ${statusColors[o.status]}; color: white; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: bold; display: inline-block; margin-bottom: 0.5rem;">
-                            ${o.status.toUpperCase()}
-                        </div>
-                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                            <select onchange="updateUserOrderStatus('${o.id}', this.value)" style="flex: 1; padding: 0.4rem; border-radius: 4px; border: 1px solid #ddd; font-size: 0.8rem; cursor: pointer;">
-                                <option value="">Update Status</option>
-                                <option value="confirmed">Confirmed</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="delivered">Delivered</option>
-                            </select>
-                            <button onclick="cancelUserOrder('${o.id}')" style="flex: 1; background: #e74c3c; color: white; border: none; padding: 0.4rem; border-radius: 4px; font-size: 0.8rem; font-weight: bold; cursor: pointer;">Cancel</button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (e) {
-                console.error('Error loading orders:', e);
-                const content = document.getElementById('ordersBarContent');
-                if (content) {
-                    content.innerHTML = '<p style="color: #999; text-align: center;">No orders yet</p>';
-                }
-            }
-        }
-
-        function toggleOrdersBar() {
-            const bar = document.getElementById('ordersBar');
-            bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
-        }
-
-        async function updateUserOrderStatus(orderId, status) {
-            if (!status) return;
-
-            try {
-                const res = await fetch('/api/orders/' + orderId, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: status })
-                });
-
-                if (res.ok) {
-                    alert('✅ Order status updated!');
-                    loadUserOrders();
-                }
-            } catch (e) {
-                alert('❌ Error updating order');
-            }
-        }
-
-        async function cancelUserOrder(orderId) {
-            if (!confirm('Are you sure you want to cancel this order?')) return;
-
-            try {
-                const res = await fetch('/api/orders/' + orderId, {
-                    method: 'DELETE'
-                });
-
-                if (res.ok) {
-                    alert('✅ Order cancelled!');
-                    loadUserOrders();
-                }
-            } catch (e) {
-                alert('❌ Error cancelling order');
-            }
-        }
-
-        // Load orders on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadUserOrders();
-        });
-
-        // ========== ORDERS ==========
-
-        async function loadOrderProducts() {
-            try {
-                const res = await fetch('/api/products');
-                const products = await res.json();
-                
-                const select = document.getElementById('orderProductSelect');
-                products.forEach(p => {
-                    const option = document.createElement('option');
-                    option.value = p.id;
-                    option.textContent = `${p.name} (${p.price})`;
-                    select.appendChild(option);
-                });
-            } catch (e) {}
-        }
-
-        async function createOrder() {
-            const name = document.getElementById('orderCustomerName').value;
-            const email = document.getElementById('orderCustomerEmail').value;
-            const phone = document.getElementById('orderCustomerPhone').value;
-            const productId = document.getElementById('orderProductSelect').value;
-            const quantity = document.getElementById('orderQuantity').value;
-            const address = document.getElementById('orderAddress').value;
-
-            if (!name || !productId || !quantity) {
-                alert('❌ Fill required fields');
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        customer_name: name,
-                        customer_email: email,
-                        customer_phone: phone,
-                        product_id: productId,
-                        quantity: quantity,
-                        shipping_address: address
-                    })
-                });
-
-                if (res.ok) {
-                    const result = await res.json();
-                    showMessage('orderSuccess', '✅ Order created! Tracking: ' + result.order.tracking_number);
-                    document.getElementById('orderCustomerName').value = '';
-                    document.getElementById('orderCustomerEmail').value = '';
-                    document.getElementById('orderCustomerPhone').value = '';
-                    document.getElementById('orderProductSelect').value = '';
-                    document.getElementById('orderQuantity').value = '1';
-                    document.getElementById('orderAddress').value = '';
-                    loadOrders();
-                } else {
-                    showMessage('orderError', '❌ Error creating order');
-                }
-            } catch (e) {
-                showMessage('orderError', '❌ Error');
-            }
-        }
-
-        async function loadOrders() {
-            try {
-                const res = await fetch('/api/orders');
-                const orders = await res.json();
-
-                const list = document.getElementById('ordersList');
-                if (!orders || orders.length === 0) {
-                    list.innerHTML = '<p style="color: #999;">No orders yet</p>';
-                    return;
-                }
-
-                const statusColors = {
-                    'pending': '#ff9800',
-                    'confirmed': '#2196F3',
-                    'shipped': '#9C27B0',
-                    'delivered': '#4CAF50',
-                    'cancelled': '#f44336'
-                };
-
-                list.innerHTML = orders.map(o => `
-                    <div class="ad-card">
-                        <div class="ad-card-info">
-                            <strong>Order #${o.order_number} - ${o.id}</strong>
-                            <small>👤 ${o.customer_name} | 📦 ${o.product_name}</small>
-                            <small>Qty: ${o.quantity} | Total: ₹${Math.round(o.total_price)}</small>
-                            <small>📍 Tracking: ${o.tracking_number}</small>
-                            <div style="margin-top: 0.5rem;">
-                                <span style="background: ${statusColors[o.status]}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">
-                                    ${o.status.toUpperCase()}
-                                </span>
-                            </div>
-                        </div>
-                        <div>
-                            <select onchange="updateOrderStatus('${o.id}', this.value)" style="margin-bottom: 0.5rem; padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;">
-                                <option value="">Update Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="confirmed">Confirmed</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="delivered">Delivered</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
-                            <button class="btn btn-danger" style="width: 100%;" onclick="deleteOrder('${o.id}')">🗑️ Delete</button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (e) {}
-        }
-
-        async function updateOrderStatus(orderId, status) {
-            if (!status) return;
-
-            try {
-                const res = await fetch('/api/orders/' + orderId, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: status })
-                });
-
-                if (res.ok) {
-                    showMessage('orderSuccess', '✅ Order updated!');
-                    loadOrders();
-                }
-            } catch (e) {
-                showMessage('orderError', '❌ Error');
-            }
-        }
-
-        async function deleteOrder(orderId) {
-            if (!confirm('Delete this order?')) return;
-
-            try {
-                await fetch('/api/orders/' + orderId, { method: 'DELETE' });
-                showMessage('orderSuccess', '✅ Deleted!');
-                loadOrders();
-            } catch (e) {
-                showMessage('orderError', '❌ Error');
-            }
-        }
-
-        async function trackOrder() {
-            const trackingNumber = document.getElementById('trackingInput').value;
-            if (!trackingNumber) {
-                alert('❌ Enter tracking number');
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/orders/track/' + trackingNumber);
-                if (!res.ok) {
-                    alert('❌ Order not found');
-                    return;
-                }
-
-                const order = await res.json();
-                const result = document.getElementById('trackingResult');
-                const details = document.getElementById('trackingDetails');
-
-                const statusColors = {
-                    'pending': '#ff9800',
-                    'confirmed': '#2196F3',
-                    'shipped': '#9C27B0',
-                    'delivered': '#4CAF50',
-                    'cancelled': '#f44336'
-                };
-
-                details.innerHTML = `
-                    <p><strong>Order ID:</strong> ${order.id}</p>
-                    <p><strong>Customer:</strong> ${order.customer_name}</p>
-                    <p><strong>Product:</strong> ${order.product_name} (Qty: ${order.quantity})</p>
-                    <p><strong>Total:</strong> ₹${Math.round(order.total_price)}</p>
-                    <p><strong>Status:</strong> <span style="background: ${statusColors[order.status]}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: bold;">${order.status.toUpperCase()}</span></p>
-                    <p><strong>Address:</strong> ${order.shipping_address || 'Not provided'}</p>
-                    <p><strong>Created:</strong> ${new Date(order.created_at).toLocaleDateString()}</p>
-                    <p><strong>Updated:</strong> ${new Date(order.updated_at).toLocaleDateString()}</p>
-                `;
-
-                result.style.display = 'block';
-            } catch (e) {
-                alert('❌ Error tracking order');
-            }
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerText = message;
+            element.style.display = 'block';
+            setTimeout(() => element.style.display = 'none', 3000);
         }
     </script>
 </body>
