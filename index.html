@@ -626,11 +626,11 @@
     <!-- HOME PAGE SECTION -->
     <div id="home-page">
         <div class="filters container">
-            <button class="filter-btn active" data-category="all">All</button>
-            <button class="filter-btn" data-category="electronics">📱 Electronics</button>
-            <button class="filter-btn" data-category="fashion">👕 Fashion</button>
-            <button class="filter-btn" data-category="home">🏠 Home</button>
-            <button class="filter-btn" data-category="deals">🔥 Hot Deals</button>
+            <button class="filter-btn active" data-category="all" onclick="filterProducts(event)">All</button>
+            <button class="filter-btn" data-category="electronics" onclick="filterProducts(event)">📱 Electronics</button>
+            <button class="filter-btn" data-category="fashion" onclick="filterProducts(event)">👕 Fashion</button>
+            <button class="filter-btn" data-category="home" onclick="filterProducts(event)">🏠 Home</button>
+            <button class="filter-btn" data-category="deals" onclick="filterProducts(event)">🔥 Hot Deals</button>
         </div>
 
         <main class="container">
@@ -712,10 +712,10 @@
                     </div>
                     <div class="footer-section">
                         <h4>Categories</h4>
-                        <a href="javascript:void(0)" onclick="filterProducts('electronics')">Electronics</a>
-                        <a href="javascript:void(0)" onclick="filterProducts('fashion')">Fashion</a>
-                        <a href="javascript:void(0)" onclick="filterProducts('home')">Home & Living</a>
-                        <a href="javascript:void(0)" onclick="filterProducts('deals')">Hot Deals</a>
+                        <a href="javascript:void(0)" onclick="filterByCategory('electronics')">Electronics</a>
+                        <a href="javascript:void(0)" onclick="filterByCategory('fashion')">Fashion</a>
+                        <a href="javascript:void(0)" onclick="filterByCategory('home')">Home & Living</a>
+                        <a href="javascript:void(0)" onclick="filterByCategory('deals')">Hot Deals</a>
                     </div>
                 </div>
                 <div class="footer-bottom">
@@ -1011,6 +1011,7 @@
         let allProducts = [];
         let allOrders = [];
         let userOrders = [];
+        let currentCategory = 'all';
 
         // ========== INIT ==========
         window.addEventListener('DOMContentLoaded', () => {
@@ -1028,22 +1029,24 @@
             try {
                 const response = await fetch('/api/products?category=all');
                 allProducts = await response.json();
+                console.log('Products loaded:', allProducts);
                 displayProducts(allProducts);
             } catch (error) {
                 console.error('Failed to load products:', error);
+                document.getElementById('productsGrid').innerHTML = '<p style="color: red; text-align: center;">Error loading products</p>';
             }
         }
 
         function displayProducts(products) {
             const grid = document.getElementById('productsGrid');
             if (products.length === 0) {
-                grid.innerHTML = '<p style="text-align: center; color: #999;">No products available</p>';
+                grid.innerHTML = '<p style="text-align: center; color: #999; grid-column: 1 / -1;">No products available</p>';
                 return;
             }
 
-            grid.innerHTML = products.map(product => `
+            grid.innerHTML = products.map((product, index) => `
                 <div class="product-card">
-                    <div class="product-images" onclick="openGallery(${allProducts.indexOf(product)})">
+                    <div class="product-images" onclick="openGallery(${allProducts.findIndex(p => p.id === product.id)})">
                         <img src="${product.images[0]}" alt="${product.name}">
                     </div>
                     <div class="product-info">
@@ -1056,7 +1059,7 @@
                             </div>
                             ${product.original_price ? `<span class="discount">Save</span>` : ''}
                         </div>
-                        <button class="product-button" onclick="openCheckoutFlow(${allProducts.indexOf(product)})">
+                        <button class="product-button" onclick="openCheckoutFlow(${allProducts.findIndex(p => p.id === product.id)})">
                             🛒 Buy Now
                         </button>
                     </div>
@@ -1064,9 +1067,12 @@
             `).join('');
         }
 
-        function filterProducts(category) {
-            const buttons = document.querySelectorAll('.filter-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
+        function filterProducts(event) {
+            event.preventDefault();
+            const category = event.target.getAttribute('data-category');
+            currentCategory = category;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
 
             if (category === 'all') {
@@ -1075,6 +1081,16 @@
                 const filtered = allProducts.filter(p => p.category === category);
                 displayProducts(filtered);
             }
+        }
+
+        function filterByCategory(category) {
+            currentCategory = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            const button = document.querySelector(`[data-category="${category}"]`);
+            if (button) button.classList.add('active');
+            
+            const filtered = allProducts.filter(p => p.category === category);
+            displayProducts(filtered);
         }
 
         // ========== GALLERY MODAL ==========
@@ -1308,7 +1324,7 @@
                     document.getElementById('editProductId').value = '';
                     document.getElementById('submitBtn').innerText = '✅ Add Product';
                     loadProductsForAdmin();
-                    loadProducts();
+                    loadProducts(); // RELOAD HOME PAGE PRODUCTS
                 } else {
                     showError('productError', data.error || 'Error adding product');
                 }
