@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apna Stock - Best Affiliate Deals</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        /* Header */
+        header { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 20px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+        .logo h1 { color: #fff; font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .logo p { color: rgba(255,255,255,0.9); margin-top: 5px; }
+        .admin-btn { background: rgba(255,255,255,0.2); color: #fff; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: bold; transition: 0.3s; border: 2px solid rgba(255,255,255,0.3); }
+        .admin-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+        
+        /* Filters */
+        .filters { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px; }
+        .filter-btn { background: #fff; color: #667eea; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .filter-btn:hover, .filter-btn.active { background: #667eea; color: #fff; transform: translateY(-3px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+        
+        /* Products Grid */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        .product-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: 0.3s; }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
+        
+        /* Image Carousel */
+        .product-images { position: relative; width: 100%; height: 250px; background: #f8f9fa; overflow: hidden; }
+        .product-images img { width: 100%; height: 100%; object-fit: contain; }
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: #fff; border: none; padding: 10px 15px; cursor: pointer; font-size: 1.2rem; border-radius: 50%; transition: 0.3s; }
+        .carousel-btn:hover { background: rgba(0,0,0,0.8); }
+        .carousel-btn.prev { left: 10px; }
+        .carousel-btn.next { right: 10px; }
+        .carousel-indicator { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 5px 15px; border-radius: 15px; font-size: 0.85rem; }
+        
+        /* Product Info */
+        .product-info { padding: 20px; }
+        .product-info h3 { color: #333; font-size: 1.3rem; margin-bottom: 10px; }
+        .product-info p { color: #666; font-size: 0.95rem; line-height: 1.5; margin-bottom: 15px; }
+        .price-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .price { font-size: 1.5rem; font-weight: bold; color: #e74c3c; }
+        .original-price { text-decoration: line-through; color: #999; font-size: 1rem; margin-left: 10px; }
+        .discount { background: #e74c3c; color: #fff; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+        
+        /* Buy Button - PRIMARY ACTION */
+        .buy-btn { display: block; width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; text-align: center; padding: 15px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem; transition: 0.3s; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+        .buy-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(102,126,234,0.6); }
+        
+        /* Optional Checkout Button */
+        .checkout-btn { display: block; width: 100%; background: #f8f9fa; color: #667eea; text-align: center; padding: 12px; border: 2px solid #667eea; border-radius: 12px; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.3s; }
+        .checkout-btn:hover { background: #667eea; color: #fff; }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: #fff; border-radius: 20px; padding: 30px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #999; cursor: pointer; transition: 0.3s; }
+        .close-modal:hover { color: #333; transform: rotate(90deg); }
+        
+        /* Form */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; color: #333; font-weight: 600; margin-bottom: 8px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; transition: 0.3s; }
+        .form-group input:focus, .form-group textarea:focus { border-color: #667eea; outline: none; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .total-amount { font-size: 1.5rem; color: #e74c3c; font-weight: bold; text-align: center; margin: 20px 0; }
+        .modal-actions { display: flex; gap: 15px; }
+        .modal-actions button { flex: 1; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+        .btn-secondary { background: #f8f9fa; color: #667eea; border: 2px solid #667eea !important; }
+        .btn-secondary:hover { background: #667eea; color: #fff; }
+        
+        /* My Orders Section */
+        .my-orders { background: #fff; border-radius: 20px; padding: 25px; margin-top: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .my-orders h2 { color: #333; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .order-list { display: grid; gap: 15px; }
+        .order-item { background: #f8f9fa; border-radius: 12px; padding: 20px; border-left: 4px solid #667eea; }
+        .order-item h4 { color: #333; margin-bottom: 10px; }
+        .order-item p { color: #666; margin: 5px 0; font-size: 0.95rem; }
+        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; margin-top: 10px; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #d4edda; color: #155724; }
+        .status-shipped { background: #cce5ff; color: #004085; }
+        .status-delivered { background: #d4edda; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        
+        /* Footer */
+        footer { background: rgba(0,0,0,0.3); color: #fff; border-radius: 15px; padding: 30px; margin-top: 40px; backdrop-filter: blur(10px); }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .footer-section h4 { margin-bottom: 15px; color: #fff; }
+        .footer-section a { color: rgba(255,255,255,0.8); text-decoration: none; display: block; margin: 8px 0; transition: 0.3s; }
+        .footer-section a:hover { color: #fff; padding-left: 5px; }
+        .footer-bottom { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); }
+        
+        .loading { text-align: center; color: #fff; font-size: 1.2rem; padding: 40px; }
+        @media (max-width: 768px) { .products-grid { grid-template-columns: 1fr; } .header-content { flex-direction: column; text-align: center; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <h1>📦 Apna Stock</h1>
+                    <p>Best Deals • Handpicked Products • Save Money</p>
+                </div>
+                <a href="/admin" class="admin-btn"><i class="fas fa-lock"></i> Admin</a>
+            </div>
+        </header>
+
+        <div class="filters">
+            <button class="filter-btn active" data-category="all">All</button>
+            <button class="filter-btn" data-category="electronics">📱 Electronics</button>
+            <button class="filter-btn" data-category="fashion">👕 Fashion</button>
+            <button class="filter-btn" data-category="home">🏠 Home</button>
+            <button class="filter-btn" data-category="deals">🔥 Hot Deals</button>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <div class="loading">Loading amazing deals...</div>
+        </div>
+
+        <!-- My Orders Section (Optional - For User Tracking) -->
+        <div class="my-orders">
+            <h2 onclick="toggleOrders()">📦 My Orders <span id="ordersToggle">−</span></h2>
+            <div id="ordersList" class="order-list">
+                <p style="text-align: center; color: #999; padding: 20px;">No orders yet</p>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>📦 Apna Stock</h4>
+                    <p>Curated deals and handpicked products to help you save money every day.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="/">Home</a>
+                    <a href="/admin">Admin Panel</a>
+                    <a href="/about">About Us</a>
+                    <a href="/contact">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <a href="#" onclick="filterProducts('electronics')">Electronics</a>
+                    <a href="#" onclick="filterProducts('fashion')">Fashion</a>
+                    <a href="#" onclick="filterProducts('home')">Home & Living</a>
+                    <a href="#" onclick="filterProducts('deals')">Hot Deals</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Stay Updated</h4>
+                    <p>Get daily deals delivered to your inbox</p>
+                    <form onsubmit="event.preventDefault(); alert('Subscribed! (Demo)'); this.reset();">
+                        <input type="email" placeholder="Your email address" required style="padding: 10px; border: none; border-radius: 8px; width: 100%; margin-bottom: 10px;">
+                        <button type="submit" style="background: #667eea; color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold;">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 Apna Stock. All rights reserved.</p>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7); margin: 10px 0;">
+                    <strong>Disclosure:</strong> We are a participant in affiliate advertising programs. 
+                    When you buy through links on our site, we may earn an affiliate commission at no extra cost to you.
+                </p>
+                <div style="display: flex; justify-content: center; gap: 20px; margin-top: 15px; flex-wrap: wrap;">
+                    <a href="/privacy" style="color: rgba(255,255,255,0.8); text-decoration: none;">Privacy Policy</a>
+                    <a href="/terms" style="color: rgba(255,255,255,0.8); text-decoration: none;">Terms of Service</a>
+                    <a href="/disclaimer" style="color: rgba(255,255,255,0.8); text-decoration: none;">Disclaimer</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Checkout Modal (OPTIONAL - For Local Tracking) -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 style="margin-bottom: 20px; color: #333;">🛒 Checkout & Track Order</h2>
+            <p style="color: #666; margin-bottom: 20px; font-size: 0.95rem;">
+                <strong>Note:</strong> Fill this form to track your order locally. You'll still be redirected to the seller's website to complete your purchase.
+            </p>
+            <form id="checkoutForm">
+                <input type="hidden" id="checkoutProductId">
+                <input type="hidden" id="checkoutProductPrice">
+                
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="checkoutName" required placeholder="Enter your full name">
+                </div>
+                
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="checkoutEmail" placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="checkoutPhone" placeholder="Enter your phone number">
+                </div>
+                
+                <div class="form-group">
+                    <label>Quantity *</label>
+                    <input type="number" id="checkoutQty" min="1" value="1" required onchange="updateTotal()">
+                </div>
+                
+                <div class="form-group">
+                    <label>Shipping Address</label>
+                    <textarea id="checkoutAddress" rows="3" placeholder="Enter your full shipping address"></textarea>
+                </div>
+                
+                <div class="total-amount">
+                    Total Amount: <span id="totalAmount">₹0</span>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">✅ Place Order & Go to Seller</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+        let currentImageIndex = {};
+
+        // Load Products
+        async function loadProducts(category = 'all') {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '<div class="loading">Loading amazing deals...</div>';
+            
+            try {
+                const url = category === 'all' ? '/api/products' : `/api/products?category=${category}`;
+                const res = await fetch(url);
+                products = await res.json();
+                
+                if (!products.length) {
+                    grid.innerHTML = '<div class="loading" style="color: #fff;">No products found in this category.</div>';
+                    return;
+                }
+                
+                grid.innerHTML = products.map(p => {
+                    const images = Array.isArray(p.images) ? p.images : [p.images];
+                    const firstImage = images[0] || 'https://via.placeholder.com/300?text=No+Image';
+                    const disc = calculateDiscount(p.original_price, p.price);
+                    
+                    return `
+                    <div class="product-card" data-id="${p.id}">
+                        <div class="product-images" id="images-${p.id}">
+                            <img src="${firstImage}" alt="${p.name}" id="img-${p.id}-0">
+                            ${images.length > 1 ? `
+                                <button class="carousel-btn prev" onclick="changeImage('${p.id}', -1)">❮</button>
+                                <button class="carousel-btn next" onclick="changeImage('${p.id}', 1)">❯</button>
+                                <div class="carousel-indicator">1 / ${images.length}</div>
+                            ` : ''}
+                        </div>
+                        <div class="product-info">
+                            <h3>${p.name}</h3>
+                            <p>${p.description || 'Premium quality product with amazing features.'}</p>
+                            <div class="price-section">
+                                <div>
+                                    <span class="price">${p.price}</span>
+                                    ${p.original_price ? `<span class="original-price">${p.original_price}</span>` : ''}
+                                </div>
+                                ${disc ? `<span class="discount">${disc}% OFF</span>` : ''}
+                            </div>
+                            <!-- PRIMARY ACTION: Direct Affiliate Redirect -->
+                            <a href="${p.affiliate_link}" target="_blank" rel="noopener noreferrer" class="buy-btn">
+                                🛒 Buy Now on Seller Site
+                            </a>
+                            <!-- OPTIONAL: Local Tracking -->
+                            <button class="checkout-btn" onclick="openCheckout('${p.id}')">
+                                📋 Track Order (Optional)
+                            </button>
+                        </div>
+                    </div>`;
+                }).join('');
+                
+                // Initialize carousel indices
+                products.forEach(p => {
+                    currentImageIndex[p.id] = 0;
+                });
+                
+            } catch (error) {
+                console.error('Error loading products:', error);
+                grid.innerHTML = '<div class="loading" style="color: #fff;">Failed to load products. Please refresh.</div>';
+            }
+        }
+
+        function changeImage(productId, direction) {
+            const p = products.find(x => x.id === productId);
+            if (!p) return;
+            const images = Array.isArray(p.images) ? p.images : [p.images];
+            currentImageIndex[productId] += direction;
+            if (currentImageIndex[productId] < 0) currentImageIndex[productId] = images.length - 1;
+            if (currentImageIndex[productId] >= images.length) currentImageIndex[productId] = 0;
+            
+            const imgEl = document.getElementById(`img-${productId}-${currentImageIndex[productId]}`);
+            if (imgEl) {
+                document.querySelector(`#images-${productId} img`).src = images[currentImageIndex[productId]];
+                const indicator = document.querySelector(`#images-${productId} .carousel-indicator`);
+                if (indicator) indicator.textContent = `${currentImageIndex[productId] + 1} / ${images.length}`;
+            }
+        }
+
+        function calculateDiscount(original, current) {
+            if (!original) return '';
+            try {
+                const origNum = parseFloat(original.replace(/[₹$,]/g, ''));
+                const currNum = parseFloat(current.replace(/[₹$,]/g, ''));
+                if (isNaN(origNum) || isNaN(currNum) || origNum <= currNum) return '';
+                return Math.round(((origNum - currNum) / origNum) * 100);
+            } catch (e) { return ''; }
+        }
+
+        function filterProducts(cat) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            loadProducts(cat);
+        }
+
+        // Checkout Modal Functions
+        function openCheckout(productId) {
+            const p = products.find(x => x.id === productId);
+            if (!p) return;
+            document.getElementById('checkoutProductId').value = productId;
+            document.getElementById('checkoutProductPrice').value = p.price.replace(/[₹$,]/g, '');
+            document.getElementById('checkoutModal').style.display = 'flex';
+            updateTotal();
+        }
+
+        function closeModal() {
+            document.getElementById('checkoutModal').style.display = 'none';
+            document.getElementById('checkoutForm').reset();
+        }
+
+        function updateTotal() {
+            const price = parseFloat(document.getElementById('checkoutProductPrice').value) || 0;
+            const qty = parseInt(document.getElementById('checkoutQty').value) || 1;
+            document.getElementById('totalAmount').textContent = '₹' + (price * qty);
+        }
+
+        // Submit Checkout Form (Local Tracking Only)
+        document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const productId = document.getElementById('checkoutProductId').value;
+            const product = products.find(p => p.id === productId);
+            
+            if (!product) {
+                alert('Product not found');
+                return;
+            }
+            
+            const orderData = {
+                customer_name: document.getElementById('checkoutName').value,
+                customer_email: document.getElementById('checkoutEmail').value,
+                customer_phone: document.getElementById('checkoutPhone').value,
+                product_id: productId,
+                quantity: parseInt(document.getElementById('checkoutQty').value),
+                shipping_address: document.getElementById('checkoutAddress').value
+            };
+            
+            try {
+                // Save order locally for tracking
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const result = await res.json();
+                
+                if (res.ok) {
+                    alert('✅ Order tracked locally!\n\nNow you will be redirected to the seller website to complete your purchase.');
+                    closeModal();
+                    loadMyOrders();
+                    // Redirect to affiliate link
+                    window.open(product.affiliate_link, '_blank');
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Even if local tracking fails, still redirect to seller
+                if (confirm('Local tracking failed, but you can still proceed to the seller website. Continue?')) {
+                    window.open(product.affiliate_link, '_blank');
+                }
+            }
+        });
+
+        // Load My Orders
+        async function loadMyOrders() {
+            try {
+                const res = await fetch('/api/orders');
+                const orders = await res.json();
+                const container = document.getElementById('ordersList');
+                
+                if (!orders.length) {
+                    container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No orders yet</p>';
+                    return;
+                }
+                
+                container.innerHTML = orders.map(o => `
+                    <div class="order-item">
+                        <h4>📦 ${o.product_name}</h4>
+                        <p><strong>Order:</strong> ${o.id}</p>
+                        <p><strong>Customer:</strong> ${o.customer_name}</p>
+                        <p><strong>Qty:</strong> ${o.quantity} | <strong>Total:</strong> ₹${o.total_price}</p>
+                        ${o.tracking_number ? `<p><strong>Tracking:</strong> ${o.tracking_number}</p>` : ''}
+                        <span class="status-badge status-${o.status}">${o.status.toUpperCase()}</span>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading orders:', error);
+            }
+        }
+
+        function toggleOrders() {
+            const list = document.getElementById('ordersList');
+            const toggle = document.getElementById('ordersToggle');
+            if (list.style.display === 'none') {
+                list.style.display = 'grid';
+                toggle.textContent = '−';
+            } else {
+                list.style.display = 'none';
+                toggle.textContent = '+';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProducts();
+            loadMyOrders();
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    loadProducts(e.target.dataset.category);
+                });
+            });
+            
+            // Close modal on outside click
+            window.onclick = function(event) {
+                const modal = document.getElementById('checkoutModal');
+                if (event.target === modal) closeModal();
+            };
+        });
+    </script>
+</body>
+</html>
