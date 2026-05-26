@@ -730,16 +730,16 @@
                     <input type="email" id="checkoutEmail" placeholder="your@email.com" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
                 </div>
 
-                <button onclick="redirectToAffiliateLink()" style="width: 100%; background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white; border: none; padding: 1rem; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 1rem;">✅ Continue to Seller</button>
+                <button onclick="redirectToAffiliateLink()" style="width: 100%; background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white; border: none; padding: 1rem; border-radius: 8px; font-weight: bold; cursor: pointer;">✅ Continue to Seller</button>
                 
-                <button onclick="closeCheckout()" style="width: 100%; background: #95a5a6; color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: bold; cursor: pointer;">❌ Cancel</button>
+                <button onclick="closeCheckout()" style="width: 100%; background: #95a5a6; color: white; border: none; padding: 0.75rem; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 0.75rem;">❌ Cancel</button>
 
                 <p style="font-size: 0.85rem; color: #999; text-align: center; margin-top: 1rem;">🔒 You will be redirected to the seller's secure website</p>
             </div>
         </div>
 
         <!-- Orders Tracking Bar (Scrollable) -->
-        <div id="ordersBar" style="display: none; position: fixed; bottom: 0; right: 0; width: 100%; max-width: 400px; max-height: 300px; background: white; border: 2px solid #667eea; border-radius: 12px 12px 0 0; overflow-y: auto; box-shadow: 0 -4px 12px rgba(0,0,0,0.1); z-index: 1500;">
+        <div id="ordersBar" style="display: none; position: fixed; bottom: 0; right: 0; width: 100%; max-width: 400px; max-height: 300px; background: white; border: 2px solid #667eea; border-radius: 12px 12px 0 0; overflow-y: auto; z-index: 1999;">
             <div style="padding: 1rem; border-bottom: 2px solid #667eea; position: sticky; top: 0; background: white;">
                 <h3 style="margin: 0; color: #333; display: flex; justify-content: space-between; align-items: center;">
                     📦 My Orders
@@ -752,7 +752,7 @@
         </div>
 
         <!-- Orders Toggle Button -->
-        <button id="ordersToggleBtn" onclick="toggleOrdersBar()" style="position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 1rem 1.2rem; border-radius: 50%; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); z-index: 1400;">
+        <button id="ordersToggleBtn" onclick="toggleOrdersBar()" style="position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.75rem 1rem; border-radius: 50%; width: 60px; height: 60px; font-size: 1.5rem; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); z-index: 1998;">
             📦
         </button>
 
@@ -998,72 +998,56 @@
 
                 <!-- Google AdSense Section -->
                 <div class="section-box">
-                    <h3>🔵 Google AdSense Setup</h3>
+                    <h3>📢 Google AdSense Config</h3>
                     
-                    <div class="success-msg" id="adsenseSuccess"></div>
-                    <div class="error-msg" id="adsenseError"></div>
+                    <div class="success-msg" id="adsSuccess"></div>
+                    <div class="error-msg" id="adsError"></div>
 
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="adsenseEnabled"> Enable Google AdSense
-                        </label>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Publisher ID (ca-pub-...)</label>
-                        <input type="text" id="publisherIdInput" placeholder="ca-pub-xxxxxxxxxxxxxxxx">
-                        <small style="color: #666; display: block; margin-top: 0.5rem;">
-                            Get your Publisher ID from <a href="https://adsense.google.com" target="_blank" style="color: #667eea;">Google AdSense</a>
-                        </small>
-                    </div>
-
-                    <button onclick="saveAdsenseConfig()" class="btn btn-primary">💾 Save AdSense Config</button>
-
-                    <h4>AdSense Tag Preview</h4>
-                    <div class="code-preview">
-                        <pre id="adsenseTagPreview">&lt;script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxxxxxxxxxxxx"&gt;&lt;/script&gt;</pre>
-                    </div>
-                    <button class="copy-btn" onclick="copyToClipboard('adsenseTagPreview')">📋 Copy Code</button>
-                </div>
-
-                <!-- Sponsor Ads Section -->
-                <div class="section-box">
-                    <h3>🎯 Sponsor Ads Management</h3>
-
-                    <div class="success-msg" id="sponsorSuccess"></div>
-                    <div class="error-msg" id="sponsorError"></div>
-
-                    <h4>Add New Sponsor Ad</h4>
-                    
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Company Name *</label>
-                            <input type="text" id="sponsorNameInput" placeholder="e.g., Nike, Amazon, Apple">
+                            <label>Enable Google AdSense</label>
+                            <input type="checkbox" id="adsenseEnabled" style="width: auto; margin-top: 0.5rem;">
                         </div>
                         <div class="form-group">
-                            <label>Position</label>
-                            <select id="sponsorPositionSelect">
-                                <option value="banner_top">📍 Banner Top</option>
-                                <option value="banner_bottom">📍 Banner Bottom</option>
-                                <option value="sidebar">📍 Sidebar</option>
-                            </select>
+                            <label>Publisher ID</label>
+                            <input type="text" id="publisherId" placeholder="ca-pub-xxxxxxxxxxxxxxxx">
                         </div>
                     </div>
 
+                    <button onclick="updateAdsConfig()" class="btn btn-primary">💾 Save AdSense Config</button>
+
+                    <h4 style="margin-top: 2rem;">Sponsor Ads</h4>
+                    
+                    <h4>Add Sponsor Ad</h4>
+                    
                     <div class="form-group">
-                        <label>Ad Image URL *</label>
-                        <input type="url" id="sponsorImageInput" placeholder="https://example.com/banner.jpg">
+                        <label>Company Name</label>
+                        <input type="text" id="sponsorName" placeholder="e.g., Nike, Apple">
                     </div>
 
                     <div class="form-group">
-                        <label>Ad Link *</label>
-                        <input type="url" id="sponsorLinkInput" placeholder="https://advertiser-link.com">
+                        <label>Image URL</label>
+                        <input type="url" id="sponsorImage" placeholder="https://...">
                     </div>
 
-                    <button onclick="addSponsorAd()" class="btn btn-primary">➕ Add Sponsor Ad</button>
+                    <div class="form-group">
+                        <label>Ad Link</label>
+                        <input type="url" id="sponsorLink" placeholder="https://...">
+                    </div>
 
-                    <h4 style="margin-top: 2rem;">Active Sponsor Ads</h4>
-                    <div class="ads-list" id="sponsorList">
+                    <div class="form-group">
+                        <label>Position</label>
+                        <select id="sponsorPosition">
+                            <option value="banner_top">Top Banner</option>
+                            <option value="banner_bottom">Bottom Banner</option>
+                            <option value="sidebar">Sidebar</option>
+                        </select>
+                    </div>
+
+                    <button onclick="addSponsorAd()" class="btn btn-primary">➕ Add Sponsor</button>
+
+                    <h4 style="margin-top: 2rem;">Sponsor Ads List</h4>
+                    <div class="ads-list" id="sponsorsList">
                         <p style="color: #999;">No sponsor ads yet</p>
                     </div>
                 </div>
@@ -1072,92 +1056,194 @@
     </div>
 
     <script>
-        // ========== GLOBAL VARIABLES ==========
-        let currentProduct = null;
+        let currentGalleryImages = [];
         let currentGalleryIndex = 0;
-        let allProducts = [];
-        let allOrders = [];
-        let userOrders = [];
-        let currentCategory = 'all';
+        let currentProduct = null;
+        let isEditMode = false;
 
-        // ========== INIT ==========
-        window.addEventListener('DOMContentLoaded', () => {
-            const adminEmail = sessionStorage.getItem('admin_logged_in');
-            if (adminEmail) {
-                document.getElementById('headerBtn').innerText = '🚪 Logout';
-                document.getElementById('headerBtn').onclick = () => logout();
-            }
+        // Load products on page load
+        document.addEventListener('DOMContentLoaded', function() {
             loadProducts();
+            loadTemplates();
+            loadMusicFiles();
+            loadAdsConfig();
             loadOrders();
         });
 
-        // ========== HOME PAGE FUNCTIONS ==========
-        async function loadProducts() {
-            try {
-                const response = await fetch('/api/products?category=all');
-                allProducts = await response.json();
-                console.log('Products loaded:', allProducts);
-                displayProducts(allProducts);
-            } catch (error) {
-                console.error('Failed to load products:', error);
-                document.getElementById('productsGrid').innerHTML = '<p style="color: red; text-align: center;">Error loading products</p>';
-            }
+        // Navigation
+        function goToAdmin() {
+            const pwd = prompt('Enter admin password:');
+            if (!pwd) return;
+            
+            fetch('/admin-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `password=${encodeURIComponent(pwd)}`
+            }).then(r => r.text()).then(() => {
+                document.getElementById('home-page').style.display = 'none';
+                document.getElementById('admin-dashboard').classList.add('active');
+                document.getElementById('headerBtn').innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+                document.getElementById('headerBtn').onclick = logout;
+                loadProducts();
+                loadOrders();
+                loadProductsForSelect();
+            }).catch(() => alert('Wrong password!'));
         }
 
-        function displayProducts(products) {
+        function logout() {
+            fetch('/admin-logout').then(() => {
+                document.getElementById('home-page').style.display = 'block';
+                document.getElementById('admin-dashboard').classList.remove('active');
+                document.getElementById('headerBtn').innerHTML = '<i class="fas fa-lock"></i> Admin';
+                document.getElementById('headerBtn').onclick = goToAdmin;
+            });
+        }
+
+        // Products
+        function loadProducts() {
+            fetch('/api/products').then(r => r.json()).then(products => {
+                renderProducts(products);
+                if (document.getElementById('admin-dashboard').classList.contains('active')) {
+                    renderProductsList(products);
+                }
+            });
+        }
+
+        function renderProducts(products) {
             const grid = document.getElementById('productsGrid');
             if (products.length === 0) {
-                grid.innerHTML = '<p style="text-align: center; color: #999; grid-column: 1 / -1;">No products available</p>';
+                grid.innerHTML = '<div class="loading">No products available yet</div>';
                 return;
             }
-
-            grid.innerHTML = products.map((product, index) => `
+            grid.innerHTML = products.map(p => `
                 <div class="product-card">
-                    <div class="product-images" onclick="openGallery(${allProducts.findIndex(p => p.id === product.id)})">
-                        <img src="${product.images[0]}" alt="${product.name}">
+                    <div class="product-images" onclick="openGallery(${products.indexOf(p)})">
+                        <img src="${p.images[0]}" alt="${p.name}">
                     </div>
                     <div class="product-info">
-                        <h3>${product.name}</h3>
-                        <p>${product.description}</p>
+                        <h3>${p.name}</h3>
+                        <p>${p.description || 'No description'}</p>
                         <div class="price-section">
                             <div>
-                                <span class="price">${product.price}</span>
-                                ${product.original_price ? `<span class="original-price">${product.original_price}</span>` : ''}
+                                <div class="price">${p.price}</div>
+                                ${p.original_price ? `<div class="original-price">${p.original_price}</div>` : ''}
                             </div>
-                            ${product.original_price ? `<span class="discount">Save</span>` : ''}
+                            ${p.original_price ? `<div class="discount">Save!</div>` : ''}
                         </div>
-                        <button class="product-button" onclick="openCheckoutFlow(${allProducts.findIndex(p => p.id === product.id)})">
-                            🛒 Buy Now
-                        </button>
+                        <button class="product-button" onclick="openCheckout('${p.id}')">Buy Now</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function filterProducts(event) {
-            event.preventDefault();
-            const category = event.target.getAttribute('data-category');
-            currentCategory = category;
-            
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            if (category === 'all') {
-                displayProducts(allProducts);
-            } else {
-                const filtered = allProducts.filter(p => p.category === category);
-                displayProducts(filtered);
+        function renderProductsList(products) {
+            const list = document.getElementById('productsList');
+            if (products.length === 0) {
+                list.innerHTML = '<p style="color: #999; text-align: center;">No products yet</p>';
+                return;
             }
+            list.innerHTML = products.map(p => `
+                <div class="product-item">
+                    <img src="${p.images[0]}" alt="${p.name}">
+                    <div class="product-item-info">
+                        <strong>${p.name}</strong>
+                        <small>${p.price} ${p.category}</small>
+                    </div>
+                    <div class="product-item-actions">
+                        <button class="btn btn-primary btn-sm" onclick="editProduct('${p.id}')">✏️ Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function filterByCategory(category) {
-            const btn = document.querySelector(`[data-category="${category}"]`);
-            if (btn) btn.click();
+        function addProduct(e) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('name', document.getElementById('productName').value);
+            formData.append('price', document.getElementById('productPrice').value);
+            formData.append('original_price', document.getElementById('productOriginalPrice').value);
+            formData.append('category', document.getElementById('productCategory').value);
+            formData.append('description', document.getElementById('productDescription').value);
+            formData.append('affiliate_link', document.getElementById('productLink').value);
+            
+            const files = document.getElementById('productImages').files;
+            for (let file of files) {
+                formData.append('images', file);
+            }
+            
+            const url = isEditMode ? `/api/products/${currentProduct.id}` : '/api/products';
+            const method = isEditMode ? 'PUT' : 'POST';
+            
+            fetch(url, { method, body: formData })
+                .then(r => r.json())
+                .then(data => {
+                    showSuccessMsg(`Product ${isEditMode ? 'updated' : 'added'} successfully!`, 'productSuccess');
+                    resetProductForm();
+                    loadProducts();
+                    loadProductsForSelect();
+                })
+                .catch(() => showErrorMsg('Error saving product', 'productError'));
         }
 
+        function editProduct(productId) {
+            document.getElementById('editProductId').value = productId;
+            loadProductForEdit();
+            document.getElementById('productForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadProductForEdit() {
+            const id = document.getElementById('editProductId').value;
+            if (!id) return;
+            
+            fetch(`/api/products/${id}`).then(r => r.json()).then(product => {
+                currentProduct = product;
+                isEditMode = true;
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productPrice').value = product.price;
+                document.getElementById('productOriginalPrice').value = product.original_price || '';
+                document.getElementById('productCategory').value = product.category;
+                document.getElementById('productDescription').value = product.description;
+                document.getElementById('productLink').value = product.affiliate_link;
+                document.getElementById('submitBtn').textContent = '✅ Update Product';
+                document.getElementById('productImages').removeAttribute('required');
+                showSuccessMsg(`Loaded: ${product.name}`, 'productSuccess');
+            });
+        }
+
+        function resetProductForm() {
+            document.getElementById('productForm').reset();
+            document.getElementById('editProductId').value = '';
+            document.getElementById('submitBtn').textContent = '✅ Add Product';
+            document.getElementById('productImages').setAttribute('required', 'required');
+            isEditMode = false;
+            currentProduct = null;
+        }
+
+        function deleteProduct(id) {
+            if (!confirm('Delete this product?')) return;
+            fetch(`/api/products/${id}`, { method: 'DELETE' })
+                .then(() => {
+                    showSuccessMsg('Product deleted!', 'productSuccess');
+                    loadProducts();
+                    loadProductsForSelect();
+                });
+        }
+
+        function loadProductsForSelect() {
+            fetch('/api/products').then(r => r.json()).then(products => {
+                const select = document.getElementById('orderProductSelect');
+                select.innerHTML = '<option value="">Select a product</option>' + 
+                    products.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
+            });
+        }
+
+        // Gallery
         function openGallery(index) {
-            if (allProducts.length === 0) return;
-            currentGalleryIndex = index;
+            const products = Array.from(document.querySelectorAll('.product-card'));
+            const product = products[index].__product;
+            currentGalleryImages = product.images;
+            currentGalleryIndex = 0;
             updateGallery();
             document.getElementById('galleryModal').style.display = 'flex';
         }
@@ -1166,34 +1252,27 @@
             document.getElementById('galleryModal').style.display = 'none';
         }
 
-        function updateGallery() {
-            const product = allProducts[currentGalleryIndex];
-            if (!product || !product.images) return;
-            
-            const images = product.images;
-            document.getElementById('galleryImage').src = images[currentGalleryIndex % images.length];
-            document.getElementById('galleryCounter').textContent = `${(currentGalleryIndex % images.length) + 1} / ${images.length}`;
-        }
-
         function changeImage(direction) {
-            const product = allProducts[currentGalleryIndex];
-            if (!product || !product.images) return;
-            
-            currentGalleryIndex = (currentGalleryIndex + direction + product.images.length) % product.images.length;
+            currentGalleryIndex = (currentGalleryIndex + direction + currentGalleryImages.length) % currentGalleryImages.length;
             updateGallery();
         }
 
-        function openCheckoutFlow(index) {
-            currentProduct = allProducts[index];
-            if (!currentProduct) return;
-            
-            document.getElementById('checkoutProductInfo').innerHTML = `
-                <strong>${currentProduct.name}</strong>
-                <small>${currentProduct.price}${currentProduct.original_price ? ` <s>${currentProduct.original_price}</s>` : ''}</small>
-            `;
-            
-            document.getElementById('checkoutModal').style.display = 'flex';
-            document.getElementById('checkoutEmail').focus();
+        function updateGallery() {
+            document.getElementById('galleryImage').src = currentGalleryImages[currentGalleryIndex];
+            document.getElementById('galleryCounter').textContent = `${currentGalleryIndex + 1} / ${currentGalleryImages.length}`;
+        }
+
+        // Checkout
+        function openCheckout(productId) {
+            fetch(`/api/products/${productId}`).then(r => r.json()).then(product => {
+                currentProduct = product;
+                document.getElementById('checkoutProductInfo').innerHTML = `
+                    <strong>${product.name}</strong><br>
+                    Price: <strong>${product.price}</strong><br>
+                    ${product.description ? `<small>${product.description}</small>` : ''}
+                `;
+                document.getElementById('checkoutModal').style.display = 'flex';
+            });
         }
 
         function closeCheckout() {
@@ -1206,646 +1285,376 @@
                 alert('Please enter your email');
                 return;
             }
-
-            // Create order record
-            createOrderFromCheckout(email);
             
-            // Redirect to affiliate link
-            if (currentProduct && currentProduct.affiliate_link) {
-                window.open(currentProduct.affiliate_link, '_blank');
-            }
-            
-            closeCheckout();
-        }
-
-        async function createOrderFromCheckout(email) {
-            if (!currentProduct) return;
-            
-            try {
-                await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        customer_name: 'Guest',
-                        customer_email: email,
-                        product_id: currentProduct.id,
-                        quantity: 1
-                    })
-                });
-                loadOrders();
-            } catch (error) {
-                console.error('Error creating order:', error);
-            }
-        }
-
-        // ========== ADMIN FUNCTIONS ==========
-        function goToAdmin() {
-            const pwd = prompt('Enter Admin Password:');
-            if (!pwd) return;
-
-            fetch('/admin-login', {
+            // Create order
+            fetch('/api/orders', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `password=${pwd}`
-            }).then(res => {
-                if (res.ok) {
-                    sessionStorage.setItem('admin_logged_in', 'true');
-                    showAdminDashboard();
-                    loadAdminProducts();
-                    loadOrders();
-                    loadTemplates();
-                    loadMusicFiles();
-                    loadSponsorAds();
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customer_email: email,
+                    customer_name: 'Guest',
+                    product_id: currentProduct.id,
+                    quantity: 1
+                })
+            }).then(r => r.json()).then(order => {
+                localStorage.setItem('lastOrder', JSON.stringify(order.order));
+                window.open(currentProduct.affiliate_link, '_blank');
+                closeCheckout();
+                loadOrders();
+            });
+        }
+
+        // Orders
+        function loadOrders() {
+            fetch('/api/orders').then(r => r.json()).then(orders => {
+                const ordersBarContent = document.getElementById('ordersBarContent');
+                if (orders.length === 0) {
+                    ordersBarContent.innerHTML = '<p style="color: #999; text-align: center;">No orders yet</p>';
                 } else {
-                    alert('Wrong password!');
+                    ordersBarContent.innerHTML = orders.slice(0, 5).map(o => `
+                        <div style="padding: 0.75rem; border-bottom: 1px solid #eee; font-size: 0.9rem;">
+                            <strong>${o.product_name}</strong><br>
+                            <small>Status: ${o.status}</small><br>
+                            <small>${o.order_number}</small>
+                        </div>
+                    `).join('');
+                }
+                
+                if (document.getElementById('admin-dashboard').classList.contains('active')) {
+                    renderOrdersList(orders);
                 }
             });
         }
 
-        function logout() {
-            sessionStorage.removeItem('admin_logged_in');
-            fetch('/admin-logout');
-            location.href = '/';
-        }
-
-        function showAdminDashboard() {
-            document.getElementById('home-page').style.display = 'none';
-            document.getElementById('admin-dashboard').classList.add('active');
-            document.getElementById('headerBtn').innerText = '🚪 Logout';
-            document.getElementById('headerBtn').onclick = () => logout();
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-            
-            document.getElementById(tab + '-tab').classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        // ========== PRODUCT MANAGEMENT ==========
-        async function loadAdminProducts() {
-            try {
-                const res = await fetch('/api/products');
-                const products = await res.json();
-                const container = document.getElementById('productsList');
-                
-                if (products.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #999;">No products yet</p>';
-                    return;
-                }
-                
-                container.innerHTML = products.map(p => `
-                    <div class="product-item">
-                        <img src="${p.images[0]}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/60'">
-                        <div class="product-item-info">
-                            <strong>${p.name}</strong>
-                            <small>${p.price} ${p.original_price ? `<s>${p.original_price}</s>` : ''}</small>
-                            <small style="color: #667eea;">ID: ${p.id}</small>
-                        </div>
-                        <div class="product-item-actions">
-                            <button class="btn btn-primary btn-sm" onclick="loadProductToEdit('${p.id}')">✏️ Edit</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')">🗑️ Delete</button>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Failed to load products:', error);
-            }
-        }
-
-        function loadProductToEdit(productId) {
-            fetch(`/api/products/${productId}`)
-                .then(res => res.json())
-                .then(product => {
-                    document.getElementById('editProductId').value = product.id;
-                    document.getElementById('productName').value = product.name;
-                    document.getElementById('productPrice').value = product.price;
-                    document.getElementById('productOriginalPrice').value = product.original_price || '';
-                    document.getElementById('productLink').value = product.affiliate_link;
-                    document.getElementById('productCategory').value = product.category || 'other';
-                    document.getElementById('productDescription').value = product.description || '';
-                    
-                    // Scroll to form
-                    document.querySelector('#products-tab .section-box').scrollIntoView({ behavior: 'smooth' });
-                });
-        }
-
-        async function loadProductForEdit() {
-            const productId = document.getElementById('editProductId').value;
-            if (!productId) {
-                alert('Please enter a product ID');
-                return;
-            }
-            loadProductToEdit(productId);
-        }
-
-        function resetProductForm() {
-            document.getElementById('productForm').reset();
-            document.getElementById('editProductId').value = '';
-            document.getElementById('submitBtn').textContent = '✅ Add Product';
-        }
-
-        async function addProduct(event) {
-            event.preventDefault();
-            
-            const productId = document.getElementById('editProductId').value;
-            const isEdit = !!productId;
-            
-            const form = event.target;
-            const formData = new FormData();
-            
-            formData.append('name', document.getElementById('productName').value);
-            formData.append('price', document.getElementById('productPrice').value);
-            formData.append('original_price', document.getElementById('productOriginalPrice').value);
-            formData.append('affiliate_link', document.getElementById('productLink').value);
-            formData.append('category', document.getElementById('productCategory').value);
-            formData.append('description', document.getElementById('productDescription').value);
-            
-            const files = document.getElementById('productImages').files;
-            if (files.length > 0) {
-                for (let file of files) {
-                    formData.append('images', file);
-                }
-            }
-            
-            const url = isEdit ? `/api/products/${productId}` : '/api/products';
-            const method = isEdit ? 'PUT' : 'POST';
-            
-            try {
-                const res = await fetch(url, {
-                    method: method,
-                    body: formData
-                });
-                
-                const result = await res.json();
-                
-                if (res.ok) {
-                    showMessage(result.message || 'Product added successfully!', 'success', 'productSuccess');
-                    resetProductForm();
-                    loadAdminProducts();
-                } else {
-                    showMessage(result.error || 'Error adding product', 'error', 'productError');
-                }
-            } catch (error) {
-                showMessage('Error: ' + error.message, 'error', 'productError');
-            }
-        }
-
-        async function deleteProduct(productId) {
-            if (!confirm('Are you sure you want to delete this product?')) return;
-            
-            try {
-                const res = await fetch(`/api/products/${productId}`, {
-                    method: 'DELETE'
-                });
-                
-                const result = await res.json();
-                showMessage(result.message || 'Product deleted', 'success', 'productSuccess');
-                loadAdminProducts();
-            } catch (error) {
-                showMessage('Error deleting product', 'error', 'productError');
-            }
-        }
-
-        // ========== ORDER FUNCTIONS ==========
-        async function loadOrders() {
-            try {
-                const res = await fetch('/api/orders');
-                allOrders = await res.json();
-                
-                // Load product select options
-                const select = document.getElementById('orderProductSelect');
-                if (select && allProducts.length > 0) {
-                    select.innerHTML = '<option value="">Select a product</option>' + 
-                        allProducts.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-                }
-                
-                displayOrders(allOrders);
-                updateOrdersBar();
-            } catch (error) {
-                console.error('Failed to load orders:', error);
-            }
-        }
-
-        function displayOrders(orders) {
-            const container = document.getElementById('ordersList');
+        function renderOrdersList(orders) {
+            const list = document.getElementById('ordersList');
             if (orders.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: #999;">No orders yet</p>';
+                list.innerHTML = '<p style="color: #999;">No orders yet</p>';
                 return;
             }
-            
-            container.innerHTML = orders.map(order => `
+            list.innerHTML = orders.map(o => `
                 <div class="ad-card">
                     <div class="ad-card-info">
-                        <strong>Order #${order.order_number}</strong>
-                        <small>${order.customer_name}</small>
-                        <small>${order.product_name} x${order.quantity}</small>
-                        <small>Total: ₹${order.total_price}</small>
-                        <span class="badge ${order.status === 'delivered' ? 'active' : ''}">${order.status}</span>
+                        <strong>${o.product_name}</strong>
+                        <small>Order #${o.order_number} | Status: <strong>${o.status}</strong></small>
+                        <small>${o.customer_name} | Qty: ${o.quantity}</small>
                     </div>
-                    <div>
-                        <select onchange="updateOrderStatus('${order.id}', this.value)">
-                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="confirmed" ${order.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
-                            <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
-                            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
-                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <select onchange="updateOrderStatus('${o.id}', this.value)" style="padding: 0.5rem; border-radius: 4px;">
+                            <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                            <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                            <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                            <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
                         </select>
+                        <button class="btn btn-danger btn-sm" onclick="deleteOrder('${o.id}')">🗑️</button>
                     </div>
                 </div>
             `).join('');
         }
 
-        async function createOrder() {
+        function createOrder() {
             const data = {
                 customer_name: document.getElementById('orderCustomerName').value,
                 customer_email: document.getElementById('orderCustomerEmail').value,
                 customer_phone: document.getElementById('orderCustomerPhone').value,
                 product_id: document.getElementById('orderProductSelect').value,
-                quantity: parseInt(document.getElementById('orderQuantity').value),
+                quantity: document.getElementById('orderQuantity').value,
                 shipping_address: document.getElementById('orderAddress').value
             };
             
-            try {
-                const res = await fetch('/api/orders', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await res.json();
-                
-                if (res.ok) {
-                    showMessage('Order created successfully!', 'success', 'orderSuccess');
-                    document.getElementById('orderCustomerName').value = '';
-                    document.getElementById('orderCustomerEmail').value = '';
-                    document.getElementById('orderCustomerPhone').value = '';
-                    document.getElementById('orderProductSelect').value = '';
-                    document.getElementById('orderQuantity').value = '1';
-                    document.getElementById('orderAddress').value = '';
-                    loadOrders();
-                } else {
-                    showMessage(result.error || 'Error creating order', 'error', 'orderError');
-                }
-            } catch (error) {
-                showMessage('Error: ' + error.message, 'error', 'orderError');
+            if (!data.customer_name || !data.product_id) {
+                showErrorMsg('Fill required fields', 'orderError');
+                return;
             }
-        }
-
-        async function updateOrderStatus(orderId, status) {
-            try {
-                const res = await fetch(`/api/orders/${orderId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: status })
-                });
-                
-                const result = await res.json();
-                showMessage(result.message || 'Order updated', 'success', 'orderSuccess');
+            
+            fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(r => r.json()).then(res => {
+                showSuccessMsg('Order created!', 'orderSuccess');
+                document.getElementById('orderCustomerName').value = '';
+                document.getElementById('orderCustomerEmail').value = '';
+                document.getElementById('orderCustomerPhone').value = '';
+                document.getElementById('orderProductSelect').value = '';
+                document.getElementById('orderQuantity').value = '1';
+                document.getElementById('orderAddress').value = '';
                 loadOrders();
-            } catch (error) {
-                showMessage('Error updating order', 'error', 'orderError');
-            }
+            }).catch(() => showErrorMsg('Error creating order', 'orderError'));
         }
 
-        async function trackOrder() {
-            const trackingNumber = document.getElementById('trackingInput').value;
-            if (!trackingNumber) {
-                alert('Please enter a tracking number');
+        function updateOrderStatus(orderId, status) {
+            fetch(`/api/orders/${orderId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status })
+            }).then(() => {
+                showSuccessMsg('Order updated!', 'orderSuccess');
+                loadOrders();
+            });
+        }
+
+        function deleteOrder(id) {
+            if (!confirm('Delete this order?')) return;
+            fetch(`/api/orders/${id}`, { method: 'DELETE' }).then(() => {
+                showSuccessMsg('Order deleted!', 'orderSuccess');
+                loadOrders();
+            });
+        }
+
+        function trackOrder() {
+            const tracking = document.getElementById('trackingInput').value;
+            if (!tracking) {
+                alert('Enter tracking number');
                 return;
             }
             
-            try {
-                const res = await fetch(`/api/orders/track/${trackingNumber}`);
-                const order = await res.json();
-                
-                if (res.ok) {
-                    document.getElementById('trackingResult').style.display = 'block';
-                    document.getElementById('trackingDetails').innerHTML = `
-                        <strong>Order ID:</strong> ${order.id}<br>
-                        <strong>Customer:</strong> ${order.customer_name}<br>
-                        <strong>Product:</strong> ${order.product_name}<br>
-                        <strong>Status:</strong> ${order.status}<br>
-                        <strong>Total:</strong> ₹${order.total_price}<br>
-                        <strong>Created:</strong> ${new Date(order.created_at).toLocaleDateString()}
-                    `;
-                } else {
-                    alert('Order not found');
-                }
-            } catch (error) {
-                alert('Error tracking order: ' + error.message);
-            }
+            fetch(`/api/orders/track/${tracking}`).then(r => r.json()).then(order => {
+                document.getElementById('trackingResult').style.display = 'block';
+                document.getElementById('trackingStatus').textContent = `Order #${order.order_number} - ${order.status}`;
+                document.getElementById('trackingDetails').innerHTML = `
+                    <strong>${order.product_name}</strong><br>
+                    Customer: ${order.customer_name}<br>
+                    Quantity: ${order.quantity}<br>
+                    Total: ₹${order.total_price}<br>
+                    Address: ${order.shipping_address || 'N/A'}<br>
+                    <br><strong>Status: ${order.status}</strong>
+                `;
+            }).catch(() => alert('Order not found'));
         }
 
-        function updateOrdersBar() {
-            const userOrders = allOrders.filter(o => o.customer_email === sessionStorage.getItem('userEmail'));
-            const container = document.getElementById('ordersBarContent');
-            
-            if (userOrders.length === 0) {
-                container.innerHTML = '<p style="color: #999; text-align: center;">No orders yet</p>';
+        // Templates
+        function loadTemplates() {
+            fetch('/api/templates').then(r => r.json()).then(templates => {
+                if (!document.getElementById('admin-dashboard').classList.contains('active')) return;
+                renderTemplatesList(templates);
+            });
+        }
+
+        function renderTemplatesList(templates) {
+            const list = document.getElementById('templatesList');
+            if (templates.length === 0) {
+                list.innerHTML = '<p style="color: #999;">No templates yet</p>';
                 return;
             }
-            
-            container.innerHTML = userOrders.map(order => `
+            list.innerHTML = templates.map(t => `
                 <div class="ad-card">
-                    <div class="ad-card-info">
-                        <strong>#${order.order_number}</strong>
-                        <small>${order.product_name}</small>
-                        <span class="badge ${order.status === 'delivered' ? 'active' : ''}">${order.status}</span>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <div style="width: 40px; height: 40px; border-radius: 4px; background: linear-gradient(135deg, ${t.colors.primary} 0%, ${t.colors.secondary} 100%);"></div>
+                        <div class="ad-card-info">
+                            <strong>${t.name}</strong>
+                            <small>Layout: ${t.layout}</small>
+                        </div>
                     </div>
+                    <button class="btn btn-danger btn-sm" onclick="deleteTemplate('${t.id}')">🗑️ Delete</button>
                 </div>
             `).join('');
         }
 
-        function toggleOrdersBar() {
-            const bar = document.getElementById('ordersBar');
-            const btn = document.getElementById('ordersToggleBtn');
-            
-            if (bar.style.display === 'none') {
-                bar.style.display = 'block';
-                btn.textContent = '−';
-            } else {
-                bar.style.display = 'none';
-                btn.textContent = '📦';
-            }
-        }
-
-        // ========== TEMPLATES ==========
-        async function loadTemplates() {
-            try {
-                const res = await fetch('/api/templates');
-                const templates = await res.json();
-                const container = document.getElementById('templatesList');
-                
-                if (templates.length === 0) {
-                    container.innerHTML = '<p style="color: #999;">No templates yet</p>';
-                    return;
+        function addTemplate() {
+            const data = {
+                name: document.getElementById('templateName').value,
+                colors: {
+                    primary: document.getElementById('templateColor1').value,
+                    secondary: document.getElementById('templateColor2').value
                 }
-                
-                container.innerHTML = templates.map(t => `
-                    <div class="ad-card">
-                        <div class="ad-card-info">
-                            <strong>${t.name}</strong>
-                            <small style="background: ${t.colors[0]}; color: white; padding: 2px 8px; border-radius: 4px; display: inline-block; margin-top: 5px;">
-                                ${t.colors[0]}
-                            </small>
-                        </div>
-                        <button class="btn btn-danger btn-sm" onclick="deleteTemplate('${t.id}')">🗑️</button>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Failed to load templates:', error);
-            }
-        }
-
-        async function addTemplate() {
-            const name = document.getElementById('templateName').value;
-            if (!name) {
-                alert('Please enter template name');
+            };
+            
+            if (!data.name) {
+                showErrorMsg('Enter template name', 'templateError');
                 return;
             }
             
-            const colors = [
-                document.getElementById('templateColor1').value,
-                document.getElementById('templateColor2').value
-            ];
-            
-            try {
-                const res = await fetch('/api/templates', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: name,
-                        colors: colors
-                    })
-                });
-                
-                const result = await res.json();
-                
-                if (res.ok) {
-                    showMessage('Template created!', 'success', 'templateSuccess');
-                    document.getElementById('templateName').value = '';
-                    loadTemplates();
-                } else {
-                    showMessage(result.error || 'Error creating template', 'error', 'templateError');
-                }
-            } catch (error) {
-                showMessage('Error: ' + error.message, 'error', 'templateError');
-            }
-        }
-
-        async function deleteTemplate(templateId) {
-            if (!confirm('Delete this template?')) return;
-            
-            try {
-                const res = await fetch(`/api/templates/${templateId}`, {
-                    method: 'DELETE'
-                });
-                
-                const result = await res.json();
-                showMessage(result.message || 'Template deleted', 'success', 'templateSuccess');
+            fetch('/api/templates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(r => r.json()).then(() => {
+                showSuccessMsg('Template created!', 'templateSuccess');
+                document.getElementById('templateName').value = '';
                 loadTemplates();
-            } catch (error) {
-                showMessage('Error deleting template', 'error', 'templateError');
-            }
+            }).catch(() => showErrorMsg('Error creating template', 'templateError'));
         }
 
-        // ========== MUSIC ==========
-        async function loadMusicFiles() {
-            try {
-                const res = await fetch('/api/music');
-                const files = await res.json();
-                const container = document.getElementById('musicList');
-                
+        function deleteTemplate(id) {
+            if (!confirm('Delete this template?')) return;
+            fetch(`/api/templates/${id}`, { method: 'DELETE' }).then(() => {
+                showSuccessMsg('Template deleted!', 'templateSuccess');
+                loadTemplates();
+            });
+        }
+
+        // Music
+        function loadMusicFiles() {
+            fetch('/api/music').then(r => r.json()).then(files => {
+                if (!document.getElementById('admin-dashboard').classList.contains('active')) return;
+                const list = document.getElementById('musicList');
                 if (files.length === 0) {
-                    container.innerHTML = '<p style="color: #999;">No music files yet</p>';
-                    return;
-                }
-                
-                container.innerHTML = files.map(f => `
-                    <div class="ad-card">
-                        <div class="ad-card-info">
-                            <strong>🎵 ${f.name}</strong>
-                            <audio controls style="width: 100%; margin-top: 10px;">
-                                <source src="${f.url}" type="audio/mpeg">
-                            </audio>
+                    list.innerHTML = '<p style="color: #999;">No music files yet</p>';
+                } else {
+                    list.innerHTML = files.map(f => `
+                        <div class="ad-card">
+                            <div class="ad-card-info">
+                                <strong>🎵 ${f.name}</strong>
+                            </div>
+                            <audio controls style="height: 30px;"><source src="${f.url}"></audio>
                         </div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Failed to load music:', error);
-            }
+                    `).join('');
+                }
+            });
         }
 
-        async function uploadMusic() {
+        function uploadMusic() {
             const file = document.getElementById('musicFile').files[0];
             if (!file) {
-                alert('Please select a music file');
+                showErrorMsg('Select a music file', 'musicError');
                 return;
             }
             
             const formData = new FormData();
             formData.append('music', file);
             
-            try {
-                const res = await fetch('/api/music', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await res.json();
-                
-                if (res.ok) {
-                    showMessage('Music uploaded!', 'success', 'musicSuccess');
+            fetch('/api/music', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(() => {
+                    showSuccessMsg('Music uploaded!', 'musicSuccess');
                     document.getElementById('musicFile').value = '';
                     loadMusicFiles();
-                } else {
-                    showMessage(result.error || 'Error uploading music', 'error', 'musicError');
-                }
-            } catch (error) {
-                showMessage('Error: ' + error.message, 'error', 'musicError');
-            }
+                })
+                .catch(() => showErrorMsg('Error uploading music', 'musicError'));
         }
 
-        // ========== ADSENSE & SPONSORS ==========
-        async function saveAdsenseConfig() {
-            const enabled = document.getElementById('adsenseEnabled').checked;
-            const publisherId = document.getElementById('publisherIdInput').value;
-            
-            try {
-                const res = await fetch('/api/ads/config', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        google_adsense_enabled: enabled,
-                        google_publisher_id: publisherId
-                    })
-                });
-                
-                const result = await res.json();
-                
-                if (res.ok) {
-                    showMessage('AdSense config saved!', 'success', 'adsenseSuccess');
-                    updateAdsensePreview();
-                } else {
-                    showMessage(result.error || 'Error saving config', 'error', 'adsenseError');
-                }
-            } catch (error) {
-                showMessage('Error: ' + error.message, 'error', 'adsenseError');
-            }
+        // Ads Config
+        function loadAdsConfig() {
+            fetch('/api/ads/config').then(r => r.json()).then(cfg => {
+                if (!document.getElementById('admin-dashboard').classList.contains('active')) return;
+                document.getElementById('adsenseEnabled').checked = cfg.google_adsense_enabled;
+                document.getElementById('publisherId').value = cfg.google_publisher_id || '';
+                renderSponsorsList(cfg.sponsor_ads || []);
+            });
         }
 
-        function updateAdsensePreview() {
-            const publisherId = document.getElementById('publisherIdInput').value || 'ca-pub-xxxxxxxxxxxxxxxx';
-            document.getElementById('adsenseTagPreview').textContent = 
-                `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}"><\/script>`;
-        }
-
-        document.getElementById('publisherIdInput')?.addEventListener('input', updateAdsensePreview);
-
-        async function loadSponsorAds() {
-            try {
-                const res = await fetch('/api/ads/config');
-                const config = await res.json();
-                const container = document.getElementById('sponsorList');
-                
-                if (config.sponsor_ads.length === 0) {
-                    container.innerHTML = '<p style="color: #999;">No sponsor ads yet</p>';
-                    return;
-                }
-                
-                container.innerHTML = config.sponsor_ads.map(sponsor => `
-                    <div class="ad-card">
-                        <img src="${sponsor.image_url}" alt="${sponsor.company_name}" style="height: 60px; object-fit: contain;">
-                        <div class="ad-card-info">
-                            <strong>${sponsor.company_name}</strong>
-                            <small>${sponsor.position}</small>
-                            <span class="badge ${sponsor.active ? 'active' : ''}">Active</span>
-                        </div>
-                        <button class="btn btn-danger btn-sm" onclick="deleteSponsor('${sponsor.id}')">🗑️</button>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Failed to load sponsors:', error);
-            }
-        }
-
-        async function addSponsorAd() {
+        function updateAdsConfig() {
             const data = {
-                company_name: document.getElementById('sponsorNameInput').value,
-                image_url: document.getElementById('sponsorImageInput').value,
-                ad_link: document.getElementById('sponsorLinkInput').value,
-                position: document.getElementById('sponsorPositionSelect').value
+                google_adsense_enabled: document.getElementById('adsenseEnabled').checked,
+                google_publisher_id: document.getElementById('publisherId').value
+            };
+            
+            fetch('/api/ads/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(() => {
+                showSuccessMsg('Config updated!', 'adsSuccess');
+            }).catch(() => showErrorMsg('Error updating config', 'adsError'));
+        }
+
+        function renderSponsorsList(sponsors) {
+            const list = document.getElementById('sponsorsList');
+            if (sponsors.length === 0) {
+                list.innerHTML = '<p style="color: #999;">No sponsor ads yet</p>';
+                return;
+            }
+            list.innerHTML = sponsors.map(s => `
+                <div class="ad-card">
+                    <img src="${s.image_url}" alt="${s.company_name}" style="width: 60px; height: 60px; object-fit: contain;">
+                    <div class="ad-card-info">
+                        <strong>${s.company_name}</strong>
+                        <small>Position: ${s.position}</small>
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="deleteSponsor('${s.id}')">🗑️ Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function addSponsorAd() {
+            const data = {
+                company_name: document.getElementById('sponsorName').value,
+                image_url: document.getElementById('sponsorImage').value,
+                ad_link: document.getElementById('sponsorLink').value,
+                position: document.getElementById('sponsorPosition').value
             };
             
             if (!data.company_name || !data.image_url || !data.ad_link) {
-                alert('Please fill all fields');
+                showErrorMsg('Fill all fields', 'adsError');
                 return;
             }
             
-            try {
-                const res = await fetch('/api/ads/sponsor', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await res.json();
-                
-                if (res.ok) {
-                    showMessage('Sponsor ad added!', 'success', 'sponsorSuccess');
-                    document.getElementById('sponsorNameInput').value = '';
-                    document.getElementById('sponsorImageInput').value = '';
-                    document.getElementById('sponsorLinkInput').value = '';
-                    loadSponsorAds();
-                } else {
-                    showMessage(result.error || 'Error adding sponsor', 'error', 'sponsorError');
-                }
-            } catch (error) {
-                showMessage('Error: ' + error.message, 'error', 'sponsorError');
-            }
+            fetch('/api/ads/sponsor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).then(() => {
+                showSuccessMsg('Sponsor added!', 'adsSuccess');
+                document.getElementById('sponsorName').value = '';
+                document.getElementById('sponsorImage').value = '';
+                document.getElementById('sponsorLink').value = '';
+                loadAdsConfig();
+            }).catch(() => showErrorMsg('Error adding sponsor', 'adsError'));
         }
 
-        async function deleteSponsor(sponsorId) {
-            if (!confirm('Delete this sponsor ad?')) return;
-            
-            try {
-                const res = await fetch(`/api/ads/sponsor/${sponsorId}`, {
-                    method: 'DELETE'
-                });
-                
-                const result = await res.json();
-                showMessage(result.message || 'Sponsor deleted', 'success', 'sponsorSuccess');
-                loadSponsorAds();
-            } catch (error) {
-                showMessage('Error deleting sponsor', 'error', 'sponsorError');
-            }
-        }
-
-        // ========== UTILITIES ==========
-        function showMessage(text, type, elementId) {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-            
-            element.textContent = text;
-            element.style.display = 'block';
-            
-            setTimeout(() => {
-                element.style.display = 'none';
-            }, 3000);
-        }
-
-        function copyToClipboard(elementId) {
-            const element = document.getElementById(elementId);
-            const text = element.textContent;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                alert('Copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy:', err);
+        function deleteSponsor(id) {
+            if (!confirm('Delete this sponsor?')) return;
+            fetch(`/api/ads/sponsor/${id}`, { method: 'DELETE' }).then(() => {
+                showSuccessMsg('Sponsor deleted!', 'adsSuccess');
+                loadAdsConfig();
             });
         }
+
+        // Filtering
+        function filterProducts(e) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            const category = e.target.dataset.category;
+            const url = category === 'all' ? '/api/products' : `/api/products?category=${category}`;
+            fetch(url).then(r => r.json()).then(renderProducts);
+        }
+
+        function filterByCategory(category) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            fetch(`/api/products?category=${category}`).then(r => r.json()).then(renderProducts);
+        }
+
+        // Tabs
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Orders Bar
+        function toggleOrdersBar() {
+            const bar = document.getElementById('ordersBar');
+            bar.style.display = bar.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Messages
+        function showSuccessMsg(msg, elementId) {
+            const el = document.getElementById(elementId);
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        function showErrorMsg(msg, elementId) {
+            const el = document.getElementById(elementId);
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        // Store product reference for gallery
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/products').then(r => r.json()).then(products => {
+                const cards = document.querySelectorAll('.product-card');
+                cards.forEach((card, index) => {
+                    card.__product = products[index];
+                });
+            });
+        });
     </script>
 </body>
 </html>
