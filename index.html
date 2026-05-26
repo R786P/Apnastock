@@ -805,9 +805,9 @@
                     <div class="error-msg" id="productError"></div>
 
                     <form id="productForm" onsubmit="addProduct(event)">
-                        <div class="form-group" style="display: flex; gap: 1rem; align-items: center;">
+                        <div class="form-group" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
                             <label style="margin: 0;">Edit Product (Optional):</label>
-                            <input type="text" id="editProductId" placeholder="Paste product ID to edit">
+                            <input type="text" id="editProductId" placeholder="Paste product ID to edit" style="flex: 1; min-width: 200px;">
                             <button type="button" class="btn btn-primary" onclick="loadProductForEdit()">Load</button>
                             <button type="button" class="btn btn-danger" onclick="resetProductForm()">Clear</button>
                         </div>
@@ -863,9 +863,8 @@
                 <!-- Product List Section -->
                 <div class="section-box">
                     <h3>📋 All Products</h3>
-                    
                     <div class="product-list" id="productsList">
-                        <p style="color: #999; text-align: center;">Loading products...</p>
+                        <p style="color: #999; text-align: center; padding: 2rem;">Loading products...</p>
                     </div>
                 </div>
             </div>
@@ -1291,7 +1290,7 @@
                 const container = document.getElementById('productsList');
                 
                 if (products.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #999;">No products yet</p>';
+                    container.innerHTML = '<p style="text-align: center; color: #999; padding: 2rem;">No products yet. Add your first one! 👆</p>';
                     return;
                 }
                 
@@ -1311,6 +1310,7 @@
                 `).join('');
             } catch (error) {
                 console.error('Failed to load products:', error);
+                document.getElementById('productsList').innerHTML = '<p style="color: red;">Error loading products</p>';
             }
         }
 
@@ -1325,10 +1325,12 @@
                     document.getElementById('productLink').value = product.affiliate_link;
                     document.getElementById('productCategory').value = product.category || 'other';
                     document.getElementById('productDescription').value = product.description || '';
+                    document.getElementById('submitBtn').textContent = '💾 Update Product';
                     
                     // Scroll to form
                     document.querySelector('#products-tab .section-box').scrollIntoView({ behavior: 'smooth' });
-                });
+                })
+                .catch(err => alert('Error loading product: ' + err.message));
         }
 
         async function loadProductForEdit() {
@@ -1367,6 +1369,9 @@
                 for (let file of files) {
                     formData.append('images', file);
                 }
+            } else if (!isEdit) {
+                alert('Please select at least one image');
+                return;
             }
             
             const url = isEdit ? `/api/products/${productId}` : '/api/products';
@@ -1381,11 +1386,11 @@
                 const result = await res.json();
                 
                 if (res.ok) {
-                    showMessage(result.message || 'Product added successfully!', 'success', 'productSuccess');
+                    showMessage(result.message || (isEdit ? 'Product updated successfully!' : 'Product added successfully!'), 'success', 'productSuccess');
                     resetProductForm();
                     loadAdminProducts();
                 } else {
-                    showMessage(result.error || 'Error adding product', 'error', 'productError');
+                    showMessage(result.error || 'Error saving product', 'error', 'productError');
                 }
             } catch (error) {
                 showMessage('Error: ' + error.message, 'error', 'productError');
