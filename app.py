@@ -4,6 +4,10 @@ import uuid
 from datetime import datetime
 from flask import Flask, request, jsonify, redirect, session
 from werkzeug.utils import secure_filename
+from sqlalchemy import create_engine, Column, String, DateTime, Integer, Float, JSON as SQLJSON
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 
 try:
     from dotenv import load_dotenv
@@ -15,6 +19,70 @@ app = Flask(__name__)
 
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'secret-2026')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'ApnaStock@2026')
+
+# ==================== DATABASE SETUP ====================
+DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://neondb_owner:npg_tj8TKabiskd3@ep-misty-wave-ap0gqj6j-pooler.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require')
+
+# Remove sslmode and channel_binding for local testing if needed
+if 'localhost' in DATABASE_URL or '127.0.0.1' in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.split('?')[0]
+
+engine = create_engine(DATABASE_URL, poolclass=NullPool)
+Base = declarative_base()
+Session = sessionmaker(bind=engine)
+
+# ==================== MODELS ====================
+class Product(Base):
+    __tablename__ = "products"
+    id = Column(String, primary_key=True)
+    name = Column(String, nullable=False)
+    price = Column(String, nullable=False)
+    original_price = Column(String)
+    affiliate_link = Column(String, nullable=False)
+    category = Column(String, default='other')
+    description = Column(String)
+    images = Column(SQLJSON)
+    active = Column(String, default='true')
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime)
+
+class Order(Base):
+    __tablename__ = "orders"
+    id = Column(String, primary_key=True)
+    order_number = Column(Integer)
+    customer_name = Column(String, nullable=False)
+    customer_email = Column(String)
+    customer_phone = Column(String)
+    product_id = Column(String, nullable=False)
+    product_name = Column(String)
+    product_price = Column(String)
+    quantity = Column(Integer, default=1)
+    total_price = Column(Float)
+    status = Column(String, default='pending')
+    shipping_address = Column(String)
+    tracking_number = Column(String)
+    notes = Column(String)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime)
+
+class Template(Base):
+    __tablename__ = "templates"
+    id = Column(String, primary_key=True)
+    name = Column(String, nullable=False)
+    colors = Column(SQLJSON)
+    fonts = Column(SQLJSON)
+    layout = Column(String, default='grid')
+    created_at = Column(DateTime, default=datetime.now)
+
+class AdsConfig(Base):
+    __tablename__ = "ads_config"
+    id = Column(String, primary_key=True, default='config')
+    google_adsense_enabled = Column(String, default='false')
+    google_publisher_id = Column(String)
+    sponsor_ads = Column(SQLJSON, default=list)
+
+# Create tables
+Base.metadata.create_all(engine)
 
 # File upload config
 UPLOAD_FOLDER = 'uploads'
@@ -29,80 +97,36 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MUSIC_FOLDER'] = MUSIC_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
 
-DATA_DIR = 'data'
-PRODUCTS_FILE = os.path.join(DATA_DIR, 'products.json')
-ADS_FILE = os.path.join(DATA_DIR, 'ads_config.json')
-TEMPLATES_FILE = os.path.join(DATA_DIR, 'templates.json')
-ORDERS_FILE = os.path.join(DATA_DIR, 'orders.json')
-
-os.makedirs(DATA_DIR, exist_ok=True)
-
-def init_files():
-    if not os.path.exists(PRODUCTS_FILE):
-        with open(PRODUCTS_FILE, 'w') as f:
-            json.dump([], f)
-    if not os.path.exists(ADS_FILE):
-        with open(ADS_FILE, 'w') as f:
-            json.dump({'google_adsense_enabled': False, 'google_publisher_id': '', 'sponsor_ads': []}, f)
-    if not os.path.exists(TEMPLATES_FILE):
-        with open(TEMPLATES_FILE, 'w') as f:
-            json.dump([], f)
-    if not os.path.exists(ORDERS_FILE):
-        with open(ORDERS_FILE, 'w') as f:
-            json.dump([], f)
-
-init_files()
-
+# ==================== HELPER FUNCTIONS ====================
 def allowed_image(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_IMAGE_EXT
 
 def allowed_music(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_MUSIC_EXT
 
-def get_products():
+def init_db():
+    """Initialize database with default config"""
+    db = Session()
     try:
-        with open(PRODUCTS_FILE, 'r') as f:
-            return json.load(f)
-    except:
-        return []
+        existing = db.query(AdsConfig).filter_by(id='config').first()
+        if not existing:
+            config = AdsConfig(
+                id='config',
+                google_adsense_enabled='false',
+                google_publisher_id='',
+                sponsor_ads=[]
+            )
+            db.add(config)
+            db.commit()
+    except Exception as e:
+        print(f"Error initializing DB: {e}")
+        db.rollback()
+    finally:
+        db.close()
 
-def save_products(p):
-    with open(PRODUCTS_FILE, 'w') as f:
-        json.dump(p, f, indent=2)
+init_db()
 
-def get_ads():
-    try:
-        with open(ADS_FILE, 'r') as f:
-            return json.load(f)
-    except:
-        return {'google_adsense_enabled': False, 'google_publisher_id': '', 'sponsor_ads': []}
-
-def save_ads(a):
-    with open(ADS_FILE, 'w') as f:
-        json.dump(a, f, indent=2)
-
-def get_templates():
-    try:
-        with open(TEMPLATES_FILE, 'r') as f:
-            return json.load(f)
-    except:
-        return []
-
-def save_templates(t):
-    with open(TEMPLATES_FILE, 'w') as f:
-        json.dump(t, f, indent=2)
-
-def get_orders():
-    try:
-        with open(ORDERS_FILE, 'r') as f:
-            return json.load(f)
-    except:
-        return []
-
-def save_orders(o):
-    with open(ORDERS_FILE, 'w') as f:
-        json.dump(o, f, indent=2)
-
+# ==================== ROUTES ====================
 @app.route('/')
 def index():
     try:
@@ -138,174 +162,491 @@ def logout():
     session.clear()
     return redirect('/')
 
-# ========== PRODUCTS ==========
-
+# ==================== PRODUCTS API ====================
 @app.route('/api/products', methods=['GET'])
 def get_all_products():
-    cat = request.args.get('category', 'all')
-    prods = get_products()
-    if cat != 'all':
-        prods = [p for p in prods if p.get('category') == cat]
-    prods.sort(key=lambda x: x.get('created_at', ''), reverse=True)
-    return jsonify(prods)
+    db = Session()
+    try:
+        cat = request.args.get('category', 'all')
+        query = db.query(Product)
+        
+        if cat != 'all':
+            query = query.filter_by(category=cat)
+        
+        products = query.order_by(Product.created_at.desc()).all()
+        
+        result = []
+        for p in products:
+            result.append({
+                'id': p.id,
+                'name': p.name,
+                'price': p.price,
+                'original_price': p.original_price or '',
+                'images': p.images or [],
+                'affiliate_link': p.affiliate_link,
+                'category': p.category,
+                'description': p.description or '',
+                'active': p.active,
+                'created_at': p.created_at.isoformat() if p.created_at else ''
+            })
+        
+        return jsonify(result)
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
 
 @app.route('/api/products', methods=['POST'])
 def add_product():
-    name = request.form.get('name')
-    price = request.form.get('price')
-    affiliate_link = request.form.get('affiliate_link')
-    category = request.form.get('category', 'other')
-    description = request.form.get('description', '')
-    original_price = request.form.get('original_price', '')
-    
-    if not name or not price or not affiliate_link:
-        return jsonify({'error': 'Missing required fields'}), 400
-    
-    # Handle image uploads
-    images = []
-    if 'images' in request.files:
-        files = request.files.getlist('images')
+    db = Session()
+    try:
+        name = request.form.get('name')
+        price = request.form.get('price')
+        affiliate_link = request.form.get('affiliate_link')
+        category = request.form.get('category', 'other')
+        description = request.form.get('description', '')
+        original_price = request.form.get('original_price', '')
         
-        if len(files) > 5:
-            return jsonify({'error': 'Maximum 5 images allowed'}), 400
+        if not name or not price or not affiliate_link:
+            return jsonify({'error': 'Missing required fields'}), 400
         
-        for file in files:
-            if file and file.filename and allowed_image(file.filename):
-                filename = secure_filename(file.filename)
-                filename = f"{uuid.uuid4()}_{filename}"
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file.save(filepath)
-                images.append(f'/uploads/{filename}')
-            elif file and file.filename:
-                return jsonify({'error': f'Invalid image type: {file.filename}'}), 400
-    
-    if not images:
-        return jsonify({'error': 'At least one image required'}), 400
-    
-    prod = {
-        'id': str(uuid.uuid4()),
-        'name': name,
-        'price': price,
-        'original_price': original_price,
-        'images': images,
-        'affiliate_link': affiliate_link,
-        'category': category,
-        'description': description,
-        'active': True,
-        'created_at': datetime.now().isoformat()
-    }
-    
-    prods = get_products()
-    prods.append(prod)
-    save_products(prods)
-    return jsonify({'message': 'Added', 'product': prod}), 201
+        # Handle image uploads
+        images = []
+        if 'images' in request.files:
+            files = request.files.getlist('images')
+            
+            if len(files) > 5:
+                return jsonify({'error': 'Maximum 5 images allowed'}), 400
+            
+            for file in files:
+                if file and file.filename and allowed_image(file.filename):
+                    filename = secure_filename(file.filename)
+                    filename = f"{uuid.uuid4()}_{filename}"
+                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(filepath)
+                    images.append(f'/uploads/{filename}')
+                elif file and file.filename:
+                    return jsonify({'error': f'Invalid image type: {file.filename}'}), 400
+        
+        if not images:
+            return jsonify({'error': 'At least one image required'}), 400
+        
+        prod = Product(
+            id=str(uuid.uuid4()),
+            name=name,
+            price=price,
+            original_price=original_price,
+            images=images,
+            affiliate_link=affiliate_link,
+            category=category,
+            description=description,
+            active='true',
+            created_at=datetime.now()
+        )
+        
+        db.add(prod)
+        db.commit()
+        
+        return jsonify({
+            'message': 'Added',
+            'product': {
+                'id': prod.id,
+                'name': prod.name,
+                'price': prod.price,
+                'original_price': prod.original_price or '',
+                'images': prod.images or [],
+                'affiliate_link': prod.affiliate_link,
+                'category': prod.category,
+                'description': prod.description,
+                'active': prod.active,
+                'created_at': prod.created_at.isoformat()
+            }
+        }), 201
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
 
 @app.route('/api/products/<pid>', methods=['GET'])
 def get_product(pid):
-    prods = get_products()
-    prod = next((p for p in prods if p['id'] == pid), None)
-    if prod:
-        return jsonify(prod)
-    return jsonify({'error': 'Not found'}), 404
+    db = Session()
+    try:
+        prod = db.query(Product).filter_by(id=pid).first()
+        if prod:
+            return jsonify({
+                'id': prod.id,
+                'name': prod.name,
+                'price': prod.price,
+                'original_price': prod.original_price or '',
+                'images': prod.images or [],
+                'affiliate_link': prod.affiliate_link,
+                'category': prod.category,
+                'description': prod.description,
+                'active': prod.active,
+                'created_at': prod.created_at.isoformat() if prod.created_at else ''
+            })
+        return jsonify({'error': 'Not found'}), 404
+    finally:
+        db.close()
 
 @app.route('/api/products/<pid>', methods=['PUT'])
 def edit_product(pid):
-    name = request.form.get('name')
-    price = request.form.get('price')
-    affiliate_link = request.form.get('affiliate_link')
-    category = request.form.get('category', 'other')
-    description = request.form.get('description', '')
-    original_price = request.form.get('original_price', '')
-    
-    prods = get_products()
-    prod = next((p for p in prods if p['id'] == pid), None)
-    
-    if not prod:
-        return jsonify({'error': 'Not found'}), 404
-    
-    # Handle new images (optional)
-    images = prod.get('images', [])
-    if 'images' in request.files:
-        files = request.files.getlist('images')
-        new_images = []
+    db = Session()
+    try:
+        prod = db.query(Product).filter_by(id=pid).first()
+        if not prod:
+            return jsonify({'error': 'Not found'}), 404
         
-        if len(files) > 5:
-            return jsonify({'error': 'Maximum 5 images'}), 400
+        name = request.form.get('name')
+        price = request.form.get('price')
+        affiliate_link = request.form.get('affiliate_link')
+        category = request.form.get('category', 'other')
+        description = request.form.get('description', '')
+        original_price = request.form.get('original_price', '')
         
-        for file in files:
-            if file and file.filename and allowed_image(file.filename):
-                filename = secure_filename(file.filename)
-                filename = f"{uuid.uuid4()}_{filename}"
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file.save(filepath)
-                new_images.append(f'/uploads/{filename}')
+        images = prod.images or []
+        if 'images' in request.files:
+            files = request.files.getlist('images')
+            new_images = []
+            
+            if len(files) > 5:
+                return jsonify({'error': 'Maximum 5 images'}), 400
+            
+            for file in files:
+                if file and file.filename and allowed_image(file.filename):
+                    filename = secure_filename(file.filename)
+                    filename = f"{uuid.uuid4()}_{filename}"
+                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    file.save(filepath)
+                    new_images.append(f'/uploads/{filename}')
+            
+            if new_images:
+                images = new_images
         
-        if new_images:
-            images = new_images
-    
-    prod['name'] = name or prod['name']
-    prod['price'] = price or prod['price']
-    prod['affiliate_link'] = affiliate_link or prod['affiliate_link']
-    prod['category'] = category
-    prod['description'] = description
-    prod['original_price'] = original_price
-    prod['images'] = images
-    prod['updated_at'] = datetime.now().isoformat()
-    
-    save_products(prods)
-    return jsonify({'message': 'Updated', 'product': prod}), 200
+        prod.name = name or prod.name
+        prod.price = price or prod.price
+        prod.affiliate_link = affiliate_link or prod.affiliate_link
+        prod.category = category
+        prod.description = description
+        prod.original_price = original_price
+        prod.images = images
+        prod.updated_at = datetime.now()
+        
+        db.commit()
+        
+        return jsonify({
+            'message': 'Updated',
+            'product': {
+                'id': prod.id,
+                'name': prod.name,
+                'price': prod.price,
+                'original_price': prod.original_price or '',
+                'images': prod.images or [],
+                'affiliate_link': prod.affiliate_link,
+                'category': prod.category,
+                'description': prod.description,
+                'active': prod.active,
+                'updated_at': prod.updated_at.isoformat() if prod.updated_at else ''
+            }
+        }), 200
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
 
 @app.route('/api/products/<pid>', methods=['DELETE'])
 def del_product(pid):
-    prods = get_products()
-    prod = next((p for p in prods if p['id'] == pid), None)
-    if prod:
-        for img in prod.get('images', []):
-            if img.startswith('/uploads/'):
-                try:
-                    os.remove(img.replace('/uploads/', UPLOAD_FOLDER + '/'))
-                except:
-                    pass
-    
-    prods = [p for p in prods if p['id'] != pid]
-    save_products(prods)
-    return jsonify({'message': 'Deleted'}), 200
+    db = Session()
+    try:
+        prod = db.query(Product).filter_by(id=pid).first()
+        if prod:
+            for img in prod.images or []:
+                if img.startswith('/uploads/'):
+                    try:
+                        os.remove(img.replace('/uploads/', UPLOAD_FOLDER + '/'))
+                    except:
+                        pass
+        
+        db.query(Product).filter_by(id=pid).delete()
+        db.commit()
+        
+        return jsonify({'message': 'Deleted'}), 200
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
 
-# ========== TEMPLATES ==========
+# ==================== ORDERS API ====================
+@app.route('/api/orders', methods=['GET'])
+def get_all_orders():
+    db = Session()
+    try:
+        orders = db.query(Order).order_by(Order.created_at.desc()).all()
+        
+        result = []
+        for o in orders:
+            result.append({
+                'id': o.id,
+                'order_number': o.order_number,
+                'customer_name': o.customer_name,
+                'customer_email': o.customer_email or '',
+                'customer_phone': o.customer_phone or '',
+                'product_id': o.product_id,
+                'product_name': o.product_name,
+                'product_price': o.product_price,
+                'quantity': o.quantity,
+                'total_price': o.total_price,
+                'status': o.status,
+                'shipping_address': o.shipping_address or '',
+                'tracking_number': o.tracking_number,
+                'created_at': o.created_at.isoformat() if o.created_at else '',
+                'updated_at': o.updated_at.isoformat() if o.updated_at else ''
+            })
+        
+        return jsonify(result)
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
 
+@app.route('/api/orders', methods=['POST'])
+def create_order():
+    db = Session()
+    try:
+        data = request.get_json()
+        
+        if not data or not all(k in data for k in ['customer_name', 'product_id', 'quantity']):
+            return jsonify({'error': 'Missing fields'}), 400
+        
+        product = db.query(Product).filter_by(id=data.get('product_id')).first()
+        if not product:
+            return jsonify({'error': 'Product not found'}), 404
+        
+        order_count = db.query(Order).count() + 1
+        
+        order = Order(
+            id=f"ORD{str(uuid.uuid4())[:8].upper()}",
+            order_number=order_count,
+            customer_name=data.get('customer_name'),
+            customer_email=data.get('customer_email', ''),
+            customer_phone=data.get('customer_phone', ''),
+            product_id=data.get('product_id'),
+            product_name=product.name,
+            product_price=product.price,
+            quantity=data.get('quantity'),
+            total_price=float(product.price.replace('₹', '').strip()) * int(data.get('quantity', 1)),
+            status='pending',
+            shipping_address=data.get('shipping_address', ''),
+            tracking_number=f"TRK{str(uuid.uuid4())[:12].upper()}",
+            created_at=datetime.now(),
+            updated_at=datetime.now()
+        )
+        
+        db.add(order)
+        db.commit()
+        
+        return jsonify({
+            'message': 'Order created',
+            'order': {
+                'id': order.id,
+                'order_number': order.order_number,
+                'customer_name': order.customer_name,
+                'product_name': order.product_name,
+                'quantity': order.quantity,
+                'total_price': order.total_price,
+                'status': order.status,
+                'tracking_number': order.tracking_number,
+                'created_at': order.created_at.isoformat()
+            }
+        }), 201
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+@app.route('/api/orders/<order_id>', methods=['GET'])
+def get_order(order_id):
+    db = Session()
+    try:
+        order = db.query(Order).filter_by(id=order_id).first()
+        if not order:
+            return jsonify({'error': 'Order not found'}), 404
+        
+        return jsonify({
+            'id': order.id,
+            'order_number': order.order_number,
+            'customer_name': order.customer_name,
+            'customer_email': order.customer_email or '',
+            'customer_phone': order.customer_phone or '',
+            'product_name': order.product_name,
+            'quantity': order.quantity,
+            'total_price': order.total_price,
+            'status': order.status,
+            'tracking_number': order.tracking_number,
+            'created_at': order.created_at.isoformat() if order.created_at else ''
+        })
+    finally:
+        db.close()
+
+@app.route('/api/orders/<order_id>', methods=['PUT'])
+def update_order_status(order_id):
+    db = Session()
+    try:
+        data = request.get_json()
+        
+        if 'status' not in data:
+            return jsonify({'error': 'Status required'}), 400
+        
+        valid_statuses = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
+        if data['status'] not in valid_statuses:
+            return jsonify({'error': 'Invalid status'}), 400
+        
+        order = db.query(Order).filter_by(id=order_id).first()
+        if not order:
+            return jsonify({'error': 'Order not found'}), 404
+        
+        order.status = data['status']
+        order.updated_at = datetime.now()
+        
+        if 'notes' in data:
+            order.notes = data['notes']
+        
+        db.commit()
+        
+        return jsonify({
+            'message': 'Order updated',
+            'order': {
+                'id': order.id,
+                'status': order.status,
+                'updated_at': order.updated_at.isoformat()
+            }
+        })
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+@app.route('/api/orders/track/<tracking_number>', methods=['GET'])
+def track_order(tracking_number):
+    db = Session()
+    try:
+        order = db.query(Order).filter_by(tracking_number=tracking_number).first()
+        if not order:
+            return jsonify({'error': 'Order not found'}), 404
+        
+        return jsonify({
+            'id': order.id,
+            'order_number': order.order_number,
+            'customer_name': order.customer_name,
+            'product_name': order.product_name,
+            'quantity': order.quantity,
+            'total_price': order.total_price,
+            'status': order.status,
+            'tracking_number': order.tracking_number,
+            'created_at': order.created_at.isoformat() if order.created_at else ''
+        })
+    finally:
+        db.close()
+
+@app.route('/api/orders/<order_id>', methods=['DELETE'])
+def delete_order(order_id):
+    db = Session()
+    try:
+        db.query(Order).filter_by(id=order_id).delete()
+        db.commit()
+        return jsonify({'message': 'Deleted'})
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
+
+# ==================== TEMPLATES API ====================
 @app.route('/api/templates', methods=['GET'])
 def get_all_templates():
-    return jsonify(get_templates())
+    db = Session()
+    try:
+        templates = db.query(Template).all()
+        
+        result = []
+        for t in templates:
+            result.append({
+                'id': t.id,
+                'name': t.name,
+                'colors': t.colors or {},
+                'fonts': t.fonts or {},
+                'layout': t.layout,
+                'created_at': t.created_at.isoformat() if t.created_at else ''
+            })
+        
+        return jsonify(result)
+    finally:
+        db.close()
 
 @app.route('/api/templates', methods=['POST'])
 def add_template():
-    data = request.get_json()
-    if not data or 'name' not in data or 'colors' not in data:
-        return jsonify({'error': 'Missing fields'}), 400
-    
-    template = {
-        'id': str(uuid.uuid4()),
-        'name': data.get('name'),
-        'colors': data.get('colors'),
-        'fonts': data.get('fonts', {}),
-        'layout': data.get('layout', 'grid'),
-        'created_at': datetime.now().isoformat()
-    }
-    
-    templates = get_templates()
-    templates.append(template)
-    save_templates(templates)
-    return jsonify({'message': 'Added', 'template': template}), 201
+    db = Session()
+    try:
+        data = request.get_json()
+        if not data or 'name' not in data or 'colors' not in data:
+            return jsonify({'error': 'Missing fields'}), 400
+        
+        template = Template(
+            id=str(uuid.uuid4()),
+            name=data.get('name'),
+            colors=data.get('colors'),
+            fonts=data.get('fonts', {}),
+            layout=data.get('layout', 'grid'),
+            created_at=datetime.now()
+        )
+        
+        db.add(template)
+        db.commit()
+        
+        return jsonify({
+            'message': 'Added',
+            'template': {
+                'id': template.id,
+                'name': template.name,
+                'colors': template.colors,
+                'layout': template.layout
+            }
+        }), 201
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
 
 @app.route('/api/templates/<tid>', methods=['DELETE'])
 def del_template(tid):
-    templates = get_templates()
-    templates = [t for t in templates if t['id'] != tid]
-    save_templates(templates)
-    return jsonify({'message': 'Deleted'}), 200
+    db = Session()
+    try:
+        db.query(Template).filter_by(id=tid).delete()
+        db.commit()
+        return jsonify({'message': 'Deleted'})
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
 
-# ========== MUSIC ==========
-
+# ==================== MUSIC API ====================
 @app.route('/api/music', methods=['POST'])
 def upload_music():
     if 'music' not in request.files:
@@ -336,157 +677,126 @@ def get_music_files():
         pass
     return jsonify(files)
 
-# ========== ADS ==========
-
+# ==================== ADS API ====================
 @app.route('/api/ads/config', methods=['GET'])
 def get_ads_cfg():
-    return jsonify(get_ads())
+    db = Session()
+    try:
+        cfg = db.query(AdsConfig).filter_by(id='config').first()
+        if cfg:
+            return jsonify({
+                'google_adsense_enabled': cfg.google_adsense_enabled == 'true',
+                'google_publisher_id': cfg.google_publisher_id or '',
+                'sponsor_ads': cfg.sponsor_ads or []
+            })
+        return jsonify({
+            'google_adsense_enabled': False,
+            'google_publisher_id': '',
+            'sponsor_ads': []
+        })
+    finally:
+        db.close()
 
 @app.route('/api/ads/config', methods=['POST'])
 def update_ads_cfg():
-    data = request.get_json()
-    cfg = get_ads()
-    if 'google_adsense_enabled' in data:
-        cfg['google_adsense_enabled'] = data['google_adsense_enabled']
-    if 'google_publisher_id' in data:
-        cfg['google_publisher_id'] = data['google_publisher_id']
-    save_ads(cfg)
-    return jsonify({'message': 'Updated', 'config': cfg})
+    db = Session()
+    try:
+        data = request.get_json()
+        cfg = db.query(AdsConfig).filter_by(id='config').first()
+        
+        if not cfg:
+            cfg = AdsConfig(id='config')
+            db.add(cfg)
+        
+        if 'google_adsense_enabled' in data:
+            cfg.google_adsense_enabled = 'true' if data['google_adsense_enabled'] else 'false'
+        if 'google_publisher_id' in data:
+            cfg.google_publisher_id = data['google_publisher_id']
+        
+        db.commit()
+        
+        return jsonify({
+            'message': 'Updated',
+            'config': {
+                'google_adsense_enabled': cfg.google_adsense_enabled == 'true',
+                'google_publisher_id': cfg.google_publisher_id or ''
+            }
+        })
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
 
 @app.route('/api/ads/sponsor', methods=['POST'])
 def add_sponsor():
-    data = request.get_json()
-    if not data or not all(k in data for k in ['company_name', 'image_url', 'ad_link']):
-        return jsonify({'error': 'Missing'}), 400
-    
-    cfg = get_ads()
-    sponsor = {
-        'id': str(uuid.uuid4()),
-        'company_name': data.get('company_name'),
-        'image_url': data.get('image_url'),
-        'ad_link': data.get('ad_link'),
-        'position': data.get('position', 'banner_top'),
-        'active': True,
-        'created_at': datetime.now().isoformat()
-    }
-    cfg['sponsor_ads'].append(sponsor)
-    save_ads(cfg)
-    return jsonify({'message': 'Added', 'sponsor': sponsor}), 201
+    db = Session()
+    try:
+        data = request.get_json()
+        if not data or not all(k in data for k in ['company_name', 'image_url', 'ad_link']):
+            return jsonify({'error': 'Missing'}), 400
+        
+        cfg = db.query(AdsConfig).filter_by(id='config').first()
+        if not cfg:
+            cfg = AdsConfig(id='config', sponsor_ads=[])
+            db.add(cfg)
+        
+        sponsor = {
+            'id': str(uuid.uuid4()),
+            'company_name': data.get('company_name'),
+            'image_url': data.get('image_url'),
+            'ad_link': data.get('ad_link'),
+            'position': data.get('position', 'banner_top'),
+            'active': True,
+            'created_at': datetime.now().isoformat()
+        }
+        
+        if cfg.sponsor_ads is None:
+            cfg.sponsor_ads = []
+        cfg.sponsor_ads.append(sponsor)
+        
+        db.commit()
+        
+        return jsonify({'message': 'Added', 'sponsor': sponsor}), 201
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
 
 @app.route('/api/ads/sponsor/<sid>', methods=['DELETE'])
 def del_sponsor(sid):
-    cfg = get_ads()
-    cfg['sponsor_ads'] = [s for s in cfg['sponsor_ads'] if s['id'] != sid]
-    save_ads(cfg)
-    return jsonify({'message': 'Deleted'})
+    db = Session()
+    try:
+        cfg = db.query(AdsConfig).filter_by(id='config').first()
+        if cfg and cfg.sponsor_ads:
+            cfg.sponsor_ads = [s for s in cfg.sponsor_ads if s.get('id') != sid]
+            db.commit()
+        
+        return jsonify({'message': 'Deleted'})
+    except Exception as e:
+        print(f"Error: {e}")
+        db.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        db.close()
 
-# ========== ORDERS ==========
-
-@app.route('/api/orders', methods=['GET'])
-def get_all_orders():
-    orders = get_orders()
-    orders.sort(key=lambda x: x.get('created_at', ''), reverse=True)
-    return jsonify(orders)
-
-@app.route('/api/orders', methods=['POST'])
-def create_order():
-    data = request.get_json()
-    
-    if not data or not all(k in data for k in ['customer_name', 'product_id', 'quantity']):
-        return jsonify({'error': 'Missing fields'}), 400
-    
-    # Get product details
-    products = get_products()
-    product = next((p for p in products if p['id'] == data.get('product_id')), None)
-    
-    if not product:
-        return jsonify({'error': 'Product not found'}), 404
-    
-    order = {
-        'id': f"ORD{str(uuid.uuid4())[:8].upper()}",
-        'order_number': len(get_orders()) + 1,
-        'customer_name': data.get('customer_name'),
-        'customer_email': data.get('customer_email', ''),
-        'customer_phone': data.get('customer_phone', ''),
-        'product_id': data.get('product_id'),
-        'product_name': product['name'],
-        'product_price': product['price'],
-        'quantity': data.get('quantity'),
-        'total_price': float(product['price'].replace('₹', '').strip()) * int(data.get('quantity', 1)),
-        'status': 'pending',
-        'shipping_address': data.get('shipping_address', ''),
-        'tracking_number': f"TRK{str(uuid.uuid4())[:12].upper()}",
-        'created_at': datetime.now().isoformat(),
-        'updated_at': datetime.now().isoformat()
-    }
-    
-    orders = get_orders()
-    orders.append(order)
-    save_orders(orders)
-    
-    return jsonify({'message': 'Order created', 'order': order}), 201
-
-@app.route('/api/orders/<order_id>', methods=['GET'])
-def get_order(order_id):
-    orders = get_orders()
-    order = next((o for o in orders if o['id'] == order_id), None)
-    
-    if not order:
-        return jsonify({'error': 'Order not found'}), 404
-    
-    return jsonify(order)
-
-@app.route('/api/orders/<order_id>', methods=['PUT'])
-def update_order_status(order_id):
-    data = request.get_json()
-    
-    if 'status' not in data:
-        return jsonify({'error': 'Status required'}), 400
-    
-    valid_statuses = ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
-    if data['status'] not in valid_statuses:
-        return jsonify({'error': 'Invalid status'}), 400
-    
-    orders = get_orders()
-    order = next((o for o in orders if o['id'] == order_id), None)
-    
-    if not order:
-        return jsonify({'error': 'Order not found'}), 404
-    
-    order['status'] = data['status']
-    order['updated_at'] = datetime.now().isoformat()
-    
-    if 'notes' in data:
-        order['notes'] = data['notes']
-    
-    save_orders(orders)
-    
-    return jsonify({'message': 'Order updated', 'order': order})
-
-@app.route('/api/orders/track/<tracking_number>', methods=['GET'])
-def track_order(tracking_number):
-    orders = get_orders()
-    order = next((o for o in orders if o.get('tracking_number') == tracking_number), None)
-    
-    if not order:
-        return jsonify({'error': 'Order not found'}), 404
-    
-    return jsonify(order)
-
-@app.route('/api/orders/<order_id>', methods=['DELETE'])
-def delete_order(order_id):
-    orders = get_orders()
-    orders = [o for o in orders if o['id'] != order_id]
-    save_orders(orders)
-    return jsonify({'message': 'Deleted'})
-
+# ==================== FILE SERVING ====================
 @app.route('/uploads/<filename>')
 def serve_image(filename):
-    return open(os.path.join(UPLOAD_FOLDER, filename), 'rb'), 200, {'Content-Type': 'image/*'}
+    try:
+        return open(os.path.join(UPLOAD_FOLDER, filename), 'rb'), 200, {'Content-Type': 'image/*'}
+    except:
+        return jsonify({'error': 'Not found'}), 404
 
 @app.route('/music/<filename>')
 def serve_music(filename):
-    return open(os.path.join(MUSIC_FOLDER, filename), 'rb'), 200, {'Content-Type': 'audio/*'}
+    try:
+        return open(os.path.join(MUSIC_FOLDER, filename), 'rb'), 200, {'Content-Type': 'audio/*'}
+    except:
+        return jsonify({'error': 'Not found'}), 404
 
 @app.errorhandler(404)
 def not_found(e):
