@@ -1,0 +1,7 @@
+data/
+.env
+*.json
+uploads/
+music/
+__pycache__/
+*.pyc
