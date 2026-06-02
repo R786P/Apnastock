@@ -1,0 +1,17 @@
+{
+  "google_adsense": {
+    "enabled": false,
+    "publisher_id": "ca-pub-4920268343"
+  },
+  "sponsor_ads": [
+    {
+      "id": "sponsor1",
+      "company_name": "Example Product",
+      "image_url": "https://via.placeholder.com/300x100",
+      "ad_link": "https://example.com",
+      "position": "banner_top",
+      "active": true
+    }
+  ]
+}
+
