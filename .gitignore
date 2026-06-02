@@ -1,0 +1,49 @@
+# Folder/files that should NOT be pushed to GitHub
+
+# Environment variables - NEVER push real .env files!
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Data folder (products.json, orders.json, templates.json)
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Uploads and music (file storage)
+uploads/
+music/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if using any frontend build tools)
+node_modules/
+dist/
+build/
+
+# Testing
+.pytest_cache/
+.coverage
+
+# Database (if using SQLite)
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
