@@ -26,10 +26,20 @@ function createProductCard(p) {
     const dealBadge = p.deal_type === 'lightning' ? '⚡ Lightning' : 
                       p.deal_type === 'hot' ? '🔥 Hot' : null;
     
+    // FIX: Handle both 'image' (string) and 'images' (array) formats
+    let imageUrl = 'https://via.placeholder.com/300x200?text=No+Image';
+    if (p.image) {
+        imageUrl = p.image;
+    } else if (p.images && Array.isArray(p.images) && p.images.length > 0) {
+        imageUrl = p.images[0];
+    } else if (p.images && typeof p.images === 'string') {
+        imageUrl = p.images;
+    }
+    
     return `
         <article class="product-card">
             ${dealBadge ? `<span class="deal-badge">${dealBadge}</span>` : ''}
-            <img src="${p.image}" alt="${p.name}" class="product-image" 
+            <img src="${imageUrl}" alt="${p.name}" class="product-image" 
                  onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
             <div class="product-info">
                 <span class="category">${p.category}</span>
@@ -65,6 +75,14 @@ function showDealOfTheDay(products) {
         const today = new Date().toDateString();
         const index = Math.abs(hashCode(today)) % deals.length;
         const deal = deals[index];
+        
+        // FIX: Get first image from images array
+        let dealImage = 'https://via.placeholder.com/300x200?text=Deal';
+        if (deal.image) {
+            dealImage = deal.image;
+        } else if (deal.images && Array.isArray(deal.images) && deal.images.length > 0) {
+            dealImage = deal.images[0];
+        }
         
         document.getElementById('dealContent').innerHTML = `
             <h4>${deal.name}</h4>
