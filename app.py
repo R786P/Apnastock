@@ -4,10 +4,12 @@ import uuid
 import hashlib
 from datetime import datetime
 from functools import wraps
-from flask import Flask, request, jsonify, redirect, session, url_for
+from flask import Flask, request, jsonify, redirect, session, url_for, send_file
 from werkzeug.utils import secure_filename
 import requests
 from urllib.parse import urlencode
+from io import BytesIO
+import base64
 
 try:
     from dotenv import load_dotenv
@@ -787,7 +789,7 @@ def admin():
 
 @app.route('/api/products', methods=['GET'])
 def get_all_products():
-    """Get all products"""
+    """Get all products - Images stored as base64 data URLs"""
     try:
         conn = get_db_connection()
         if conn:
@@ -799,6 +801,8 @@ def get_all_products():
             
             products = []
             for row in rows:
+                # Images stored as base64 data URLs - pass directly to frontend
+                images = row[7] if row[7] else []
                 products.append({
                     'id': row[1],
                     'name': row[2],
@@ -806,24 +810,38 @@ def get_all_products():
                     'original_price': row[4],
                     'category': row[5],
                     'description': row[6],
-                    'images': row[7] if row[7] else [],
+                    'images': images,  # Will be base64 data URLs
                     'affiliate_link': row[8],
                     'active': row[9],
                     'created_at': row[10].isoformat() if row[10] else None
                 })
             return jsonify(products)
-    except:
-        pass
+    except Exception as e:
+        print(f"Error fetching products: {e}")
     
     return jsonify([])
 
 @app.route('/uploads/<filename>')
 def serve_image(filename):
-    return open(os.path.join(UPLOAD_FOLDER, filename), 'rb'), 200, {'Content-Type': 'image/*'}
+    """Serve uploaded images from filesystem"""
+    try:
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        if os.path.exists(filepath):
+            return send_file(filepath, mimetype='image/*')
+    except Exception as e:
+        print(f"Error serving image: {e}")
+    return jsonify({'error': 'Image not found'}), 404
 
 @app.route('/music/<filename>')
 def serve_music(filename):
-    return open(os.path.join(MUSIC_FOLDER, filename), 'rb'), 200, {'Content-Type': 'audio/*'}
+    """Serve music files from filesystem"""
+    try:
+        filepath = os.path.join(MUSIC_FOLDER, filename)
+        if os.path.exists(filepath):
+            return send_file(filepath, mimetype='audio/*')
+    except Exception as e:
+        print(f"Error serving music: {e}")
+    return jsonify({'error': 'Music file not found'}), 404
 
 @app.errorhandler(404)
 def not_found(e):
