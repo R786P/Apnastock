@@ -255,6 +255,38 @@ def create_user_in_db(email, name, picture_url):
         print(f"Error creating user: {e}")
     return None
 
+# ========== ADMIN LOGIN ==========
+
+@app.route('/admin-login', methods=['GET', 'POST'])
+def admin_login():
+    """Admin login page and handler"""
+    if request.method == 'GET':
+        # Show login page
+        try:
+            with open('templates/login.html', 'r', encoding='utf-8') as f:
+                return f.read()
+        except:
+            return '<h1>Login page not found</h1>', 404
+    
+    # POST - Handle login
+    password = request.form.get('password')
+    
+    if not password:
+        return redirect('/admin-login?error=No password provided')
+    
+    # Verify password
+    if password == ADMIN_PASSWORD:
+        session['admin'] = True
+        return redirect('/admin')
+    else:
+        return redirect('/admin-login?error=Wrong password')
+
+@app.route('/admin-logout')
+def admin_logout():
+    """Logout admin"""
+    session.clear()
+    return redirect('/')
+
 # ========== GMAIL OAUTH ROUTES ==========
 
 @app.route('/auth/gmail', methods=['POST'])
@@ -741,6 +773,17 @@ def index():
             return f.read()
     except:
         return '<h1>index.html not found</h1>', 404
+
+@app.route('/admin')
+def admin():
+    """Admin dashboard - check if admin is logged in"""
+    if 'admin' not in session:
+        return redirect('/admin-login')
+    try:
+        with open('index.html', 'r', encoding='utf-8') as f:
+            return f.read()
+    except:
+        return '<h1>Admin dashboard not found</h1>', 404
 
 @app.route('/api/products', methods=['GET'])
 def get_all_products():
