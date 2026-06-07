@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Apna Stock</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .admin-container { max-width: 800px; margin: 2rem auto; padding: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 8px;
+            font-size: 1rem; box-sizing: border-box;
+        }
+        .form-group input:focus { border-color: #667eea; outline: none; }
+        .btn-primary { background: #667eea; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; }
+        .btn-primary:hover { background: #5568d3; }
+        .btn-danger { background: #e74c3c; color: white; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; }
+        .btn-edit { background: #28a745; color: white; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; margin-right: 5px; }
+        .btn-edit:hover { background: #218838; }
+        .message { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: none; }
+        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .products-list { margin-top: 2rem; }
+        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid #eee; border-radius: 8px; margin-bottom: 0.5rem; }
+        .product-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; }
+        .product-info { flex: 1; margin-left: 1rem; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center; }
+        .stat-card .number { font-size: 1.5rem; font-weight: bold; color: #667eea; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close-modal {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .close-modal:hover { color: #000; }
+        .image-preview {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .image-preview img {
+            max-width: 100px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .orders-btn {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .orders-btn:hover { background: #218838; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>⚙️ Apna Stock Admin</h1>
+            <a href="/">← Back to Site</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <!-- Order Tracking Button -->
+        <div>
+            <a href="/admin/orders" class="orders-btn">📦 My Orders & Tracking</a>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats" id="stats">
+            <div class="stat-card"><div class="number" id="totalProducts">-</div><div>Total Products</div></div>
+            <div class="stat-card"><div class="number" id="categories">-</div><div>Categories</div></div>
+            <div class="stat-card"><div class="number" id="activeDeals">-</div><div>Active Deals</div></div>
+        </div>
+
+        <!-- Message Box -->
+        <div class="message" id="message"></div>
+
+        <!-- Add Product Form -->
+        <form id="addProductForm">
+            <h3>➕ Add New Product</h3>
+            
+            <div class="form-group">
+                <label>Product Name *</label>
+                <input type="text" name="name" required placeholder="e.g., Wireless Earbuds Pro">
+            </div>
+
+            <div class="form-group">
+                <label>Price *</label>
+                <input type="text" name="price" required placeholder="e.g., ₹999">
+            </div>
+
+            <div class="form-group">
+                <label>Original Price (optional)</label>
+                <input type="text" name="original_price" placeholder="e.g., ₹2999">
+            </div>
+
+            <div class="form-group">
+                <label>Upload Images *</label>
+                <input type="file" id="imageUpload" accept="image/*" multiple required>
+                <input type="hidden" name="images" id="imagesHidden" required>
+                <div id="imagePreview" class="image-preview"></div>
+            </div>
+
+            <div class="form-group">
+                <label>Affiliate Link *</label>
+                <input type="url" name="affiliate_link" required placeholder="https://amazon.in/dp/XXX?tag=your-id">
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category">
+                    <option value="electronics">📱 Electronics</option>
+                    <option value="fashion">👕 Fashion</option>
+                    <option value="home">🏠 Home & Kitchen</option>
+                    <option value="beauty">💄 Beauty</option>
+                    <option value="other">📦 Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Deal Type</label>
+                <select name="deal_type">
+                    <option value="normal">⭐ Normal</option>
+                    <option value="hot">🔥 Hot Deal</option>
+                    <option value="lightning">⚡ Lightning Deal</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Description (optional)</label>
+                <textarea name="description" rows="3" placeholder="Short description..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary">➕ Add Product</button>
+        </form>
+
+        <!-- Products List -->
+        <div class="products-list">
+            <h3>📦 Existing Products</h3>
+            <div id="productsList">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeEditModal()">&times;</span>
+            <h3>✏️ Edit Product</h3>
+            <form id="editProductForm">
+                <input type="hidden" id="editProductId">
+                <div class="form-group">
+                    <label>Product Name *</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label>Price *</label>
+                    <input type="text" id="editPrice" required>
+                </div>
+                <div class="form-group">
+                    <label>Original Price</label>
+                    <input type="text" id="editOriginalPrice">
+                </div>
+                <div class="form-group">
+                    <label>Upload Images *</label>
+                    <input type="file" id="editImageUpload" accept="image/*" multiple>
+                    <input type="hidden" id="editImages" name="images" required>
+                    <div id="editImagePreview" class="image-preview"></div>
+                </div>
+                <div class="form-group">
+                    <label>Affiliate Link *</label>
+                    <input type="url" id="editAffiliateLink" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="editCategory">
+                        <option value="electronics">📱 Electronics</option>
+                        <option value="fashion">👕 Fashion</option>
+                        <option value="home">🏠 Home & Kitchen</option>
+                        <option value="beauty">💄 Beauty</option>
+                        <option value="other">📦 Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Deal Type</label>
+                    <select id="editDealType">
+                        <option value="normal">⭐ Normal</option>
+                        <option value="hot">🔥 Hot Deal</option>
+                        <option value="lightning">⚡ Lightning Deal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editDescription" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">💾 Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Handle multiple image upload for new product
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            
+            const promises = files.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(file);
+                });
+            });
+            
+            Promise.all(promises).then(imageUrls => {
+                document.getElementById('imagesHidden').value = JSON.stringify(imageUrls);
+                document.getElementById('imagePreview').innerHTML = imageUrls.map(url => 
+                    `<img src="${url}" alt="Preview">`
+                ).join('');
+            });
+        });
+
+        // Handle multiple image upload for edit product
+        document.getElementById('editImageUpload').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            
+            const promises = files.map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.readAsDataURL(file);
+                });
+            });
+            
+            Promise.all(promises).then(imageUrls => {
+                document.getElementById('editImages').value = JSON.stringify(imageUrls);
+                document.getElementById('editImagePreview').innerHTML = imageUrls.map(url => 
+                    `<img src="${url}" alt="Preview">`
+                ).join('');
+            });
+        });
+
+        // Load stats
+        async function loadStats() {
+            const res = await fetch('/api/stats');
+            const stats = await res.json();
+            document.getElementById('totalProducts').textContent = stats.total_products;
+            document.getElementById('categories').textContent = stats.categories.length;
+            document.getElementById('activeDeals').textContent = stats.active_deals;
+        }
+
+        // Load products list for admin
+        async function loadAdminProducts() {
+            const res = await fetch('/api/products');
+            const products = await res.json();
+            const container = document.getElementById('productsList');
+            
+            if (products.length === 0) {
+                container.innerHTML = '<p>No products yet. Add your first one!</p>';
+                return;
+            }
+            
+            container.innerHTML = products.map(p => {
+                const firstImage = Array.isArray(p.images) ? p.images[0] : p.images;
+                return `
+                <div class="product-item">
+                    <img src="${firstImage}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/50'">
+                    <div class="product-info">
+                        <strong>${p.name}</strong><br>
+                        <small>${p.price} ${p.original_price ? `<s>${p.original_price}</s>` : ''}</small>
+                    </div>
+                    <div>
+                        <button class="btn-edit" onclick="openEditModal('${p.id}')">✏️</button>
+                        <button class="btn-danger" onclick="deleteProduct('${p.id}')">🗑️</button>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // Add product
+        document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            const imagesJson = document.getElementById('imagesHidden').value;
+            if (!imagesJson) {
+                alert('Please upload at least one image');
+                return;
+            }
+            
+            const data = {
+                name: formData.get('name'),
+                price: formData.get('price'),
+                original_price: formData.get('original_price'),
+                images: JSON.parse(imagesJson),
+                affiliate_link: formData.get('affiliate_link'),
+                category: formData.get('category'),
+                deal_type: formData.get('deal_type'),
+                description: formData.get('description')
+            };
+            
+            const res = await fetch('/api/products', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            
+            const result = await res.json();
+            showMessage(result.message || result.error, res.ok ? 'success' : 'error');
+            
+            if (res.ok) {
+                form.reset();
+                document.getElementById('imagePreview').innerHTML = '';
+                loadStats();
+                loadAdminProducts();
+            }
+        });
+
+        // Delete product
+        async function deleteProduct(id) {
+            if (!confirm('Delete this product?')) return;
+            
+            const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+            const result = await res.json();
+            showMessage(result.message, 'success');
+            loadStats();
+            loadAdminProducts();
+        }
+
+        // Edit product modal
+        function openEditModal(productId) {
+            fetch(`/api/products`)
+                .then(res => res.json())
+                .then(products => {
+                    const product = products.find(p => p.id === productId);
+                    if (product) {
+                        document.getElementById('editProductId').value = product.id;
+                        document.getElementById('editName').value = product.name;
+                        document.getElementById('editPrice').value = product.price;
+                        document.getElementById('editOriginalPrice').value = product.original_price || '';
+                        document.getElementById('editAffiliateLink').value = product.affiliate_link;
+                        document.getElementById('editCategory').value = product.category || 'other';
+                        document.getElementById('editDealType').value = product.deal_type || 'normal';
+                        document.getElementById('editDescription').value = product.description || '';
+                        
+                        const images = Array.isArray(product.images) ? product.images : [product.images];
+                        document.getElementById('editImages').value = JSON.stringify(images);
+                        document.getElementById('editImagePreview').innerHTML = images.map(url => 
+                            `<img src="${url}" alt="Preview">`
+                        ).join('');
+                        
+                        document.getElementById('editModal').style.display = 'flex';
+                    }
+                });
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // Save edited product
+        document.getElementById('editProductForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const productId = document.getElementById('editProductId').value;
+            const imagesJson = document.getElementById('editImages').value;
+            
+            if (!imagesJson) {
+                alert('Please upload at least one image');
+                return;
+            }
+            
+            const data = {
+                name: document.getElementById('editName').value,
+                price: document.getElementById('editPrice').value,
+                original_price: document.getElementById('editOriginalPrice').value,
+                images: JSON.parse(imagesJson),
+                affiliate_link: document.getElementById('editAffiliateLink').value,
+                category: document.getElementById('editCategory').value,
+                deal_type: document.getElementById('editDealType').value,
+                description: document.getElementById('editDescription').value
+            };
+
+            const res = await fetch(`/api/products/${productId}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+            showMessage(result.message || result.error, res.ok ? 'success' : 'error');
+
+            if (res.ok) {
+                closeEditModal();
+                loadStats();
+                loadAdminProducts();
+            }
+        });
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeEditModal();
+            }
+        };
+
+        // Show message
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 3000);
+        }
+
+        // Init
+        loadStats();
+        loadAdminProducts();
+    </script>
+</body>
+</html>
