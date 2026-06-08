@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Apna Stock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        header { background: #667eea; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 1.3rem; }
+        header a { color: white; text-decoration: none; font-size: 0.9rem; }
+        .admin-container { max-width: 800px; margin: 2rem auto; padding: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 0.75rem; border: 2px solid #ddd; border-radius: 8px;
+            font-size: 1rem;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #667eea; outline: none;
+        }
+        .btn-primary { background: #667eea; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 100%; margin-top: 0.5rem; }
+        .btn-primary:hover { background: #5568d3; }
+        .btn-danger { background: #e74c3c; color: white; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-edit { background: #28a745; color: white; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; margin-right: 5px; }
+        .btn-edit:hover { background: #218838; }
+        .message { padding: 1rem; border-radius: 8px; margin-bottom: 1rem; display: none; }
+        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .products-list { margin-top: 2rem; }
+        .products-list h3 { margin-bottom: 1rem; }
+        .product-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid #eee; border-radius: 8px; margin-bottom: 0.5rem; background: white; }
+        .product-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+        .product-info { flex: 1; margin-left: 1rem; }
+        .product-info strong { display: block; font-size: 0.95rem; }
+        .product-info small { color: #666; }
+        .product-actions { display: flex; gap: 5px; flex-shrink: 0; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: white; padding: 1rem; border-radius: 8px; text-align: center; border: 1px solid #eee; }
+        .stat-card .number { font-size: 1.5rem; font-weight: bold; color: #667eea; }
+        .stat-card .label { font-size: 0.85rem; color: #666; margin-top: 4px; }
+        .add-product-section { background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid #eee; margin-bottom: 2rem; }
+        .add-product-section h3 { margin-bottom: 1rem; color: #333; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-header h3 { margin: 0; }
+        .close-modal { font-size: 1.5rem; cursor: pointer; color: #aaa; background: none; border: none; line-height: 1; }
+        .close-modal:hover { color: #000; }
+        .image-preview { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .image-preview img { max-width: 80px; max-height: 80px; object-fit: cover; border: 1px solid #ddd; border-radius: 4px; }
+        .orders-btn {
+            background: #28a745; color: white; padding: 10px 20px;
+            text-decoration: none; border-radius: 8px; font-weight: bold;
+            display: inline-block; margin-bottom: 20px;
+        }
+        .orders-btn:hover { background: #218838; }
+        .logout-btn {
+            background: #e74c3c; color: white; padding: 8px 16px;
+            text-decoration: none; border-radius: 6px; font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⚙️ Apna Stock Admin</h1>
+        <div style="display:flex;gap:10px;align-items:center;">
+            <a href="/">← Site</a>
+            <a href="/admin-logout" class="logout-btn">Logout</a>
+        </div>
+    </header>
+
+    <div class="admin-container">
+
+        <!-- Orders Button -->
+        <a href="/admin/orders" class="orders-btn">📦 Orders & Tracking</a>
+
+        <!-- Stats -->
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="number" id="totalProducts">-</div>
+                <div class="label">Total Products</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="categories">-</div>
+                <div class="label">Categories</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="activeDeals">-</div>
+                <div class="label">Active Deals</div>
+            </div>
+        </div>
+
+        <!-- Message -->
+        <div class="message" id="message"></div>
+
+        <!-- Add Product Form -->
+        <div class="add-product-section">
+            <h3>➕ Add New Product</h3>
+
+            <div class="form-group">
+                <label>Product Name *</label>
+                <input type="text" id="addName" placeholder="e.g., Wireless Earbuds Pro">
+            </div>
+            <div class="form-group">
+                <label>Price *</label>
+                <input type="text" id="addPrice" placeholder="e.g., ₹999">
+            </div>
+            <div class="form-group">
+                <label>Original Price (optional)</label>
+                <input type="text" id="addOriginalPrice" placeholder="e.g., ₹2999">
+            </div>
+            <div class="form-group">
+                <label>Upload Images *</label>
+                <input type="file" id="addImageUpload" accept="image/*" multiple>
+                <input type="hidden" id="addImagesHidden">
+                <div id="addImagePreview" class="image-preview"></div>
+            </div>
+            <div class="form-group">
+                <label>Affiliate Link *</label>
+                <input type="url" id="addAffiliateLink" placeholder="https://amazon.in/dp/XXX?tag=your-id">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="addCategory">
+                    <option value="electronics">📱 Electronics</option>
+                    <option value="fashion">👕 Fashion</option>
+                    <option value="home">🏠 Home & Kitchen</option>
+                    <option value="beauty">💄 Beauty</option>
+                    <option value="other">📦 Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Deal Type</label>
+                <select id="addDealType">
+                    <option value="normal">⭐ Normal</option>
+                    <option value="hot">🔥 Hot Deal</option>
+                    <option value="lightning">⚡ Lightning Deal</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Description (optional)</label>
+                <textarea id="addDescription" rows="3" placeholder="Short description..."></textarea>
+            </div>
+            <button class="btn-primary" onclick="addProduct()">➕ Add Product</button>
+        </div>
+
+        <!-- Products List -->
+        <div class="products-list">
+            <h3>📦 Your Products</h3>
+            <div id="productsList">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ Edit Product</h3>
+                <button class="close-modal" onclick="closeEditModal()">×</button>
+            </div>
+            <input type="hidden" id="editProductId">
+            <div class="form-group">
+                <label>Product Name *</label>
+                <input type="text" id="editName">
+            </div>
+            <div class="form-group">
+                <label>Price *</label>
+                <input type="text" id="editPrice">
+            </div>
+            <div class="form-group">
+                <label>Original Price</label>
+                <input type="text" id="editOriginalPrice">
+            </div>
+            <div class="form-group">
+                <label>Upload New Images (optional - leave empty to keep existing)</label>
+                <input type="file" id="editImageUpload" accept="image/*" multiple>
+                <input type="hidden" id="editImages">
+                <div id="editImagePreview" class="image-preview"></div>
+            </div>
+            <div class="form-group">
+                <label>Affiliate Link *</label>
+                <input type="url" id="editAffiliateLink">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="editCategory">
+                    <option value="electronics">📱 Electronics</option>
+                    <option value="fashion">👕 Fashion</option>
+                    <option value="home">🏠 Home & Kitchen</option>
+                    <option value="beauty">💄 Beauty</option>
+                    <option value="other">📦 Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Deal Type</label>
+                <select id="editDealType">
+                    <option value="normal">⭐ Normal</option>
+                    <option value="hot">🔥 Hot Deal</option>
+                    <option value="lightning">⚡ Lightning Deal</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="editDescription" rows="3"></textarea>
+            </div>
+            <button class="btn-primary" onclick="saveProduct()">💾 Save Changes</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== IMAGE UPLOAD HANDLER (Add Form) =====
+        document.getElementById('addImageUpload').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            const promises = files.map(file => new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(file);
+            }));
+            Promise.all(promises).then(imageUrls => {
+                document.getElementById('addImagesHidden').value = JSON.stringify(imageUrls);
+                document.getElementById('addImagePreview').innerHTML = imageUrls.map(url =>
+                    `<img src="${url}" alt="Preview">`
+                ).join('');
+            });
+        });
+
+        // ===== IMAGE UPLOAD HANDLER (Edit Form) =====
+        document.getElementById('editImageUpload').addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+            const promises = files.map(file => new Promise(resolve => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(file);
+            }));
+            Promise.all(promises).then(imageUrls => {
+                document.getElementById('editImages').value = JSON.stringify(imageUrls);
+                document.getElementById('editImagePreview').innerHTML = imageUrls.map(url =>
+                    `<img src="${url}" alt="Preview">`
+                ).join('');
+            });
+        });
+
+        // ===== LOAD STATS =====
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/stats');
+                if (res.ok) {
+                    const stats = await res.json();
+                    document.getElementById('totalProducts').textContent = stats.total_products || 0;
+                    document.getElementById('categories').textContent = (stats.categories || []).length;
+                    document.getElementById('activeDeals').textContent = stats.active_deals || 0;
+                }
+            } catch(e) {
+                // stats endpoint optional
+                document.getElementById('totalProducts').textContent = '—';
+                document.getElementById('categories').textContent = '—';
+                document.getElementById('activeDeals').textContent = '—';
+            }
+        }
+
+        // ===== LOAD PRODUCTS LIST =====
+        async function loadAdminProducts() {
+            const container = document.getElementById('productsList');
+            container.innerHTML = 'Loading...';
+            try {
+                const res = await fetch('/api/products');
+                const products = await res.json();
+                
+                if (!products || products.length === 0) {
+                    container.innerHTML = '<p style="color:#666;padding:1rem;">No products yet. Add your first one above!</p>';
+                    return;
+                }
+                
+                container.innerHTML = products.map(p => {
+                    const firstImage = Array.isArray(p.images) ? p.images[0] : p.images;
+                    return `
+                    <div class="product-item">
+                        <img src="${firstImage || ''}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/50'">
+                        <div class="product-info">
+                            <strong>${p.name}</strong>
+                            <small>${p.price}${p.original_price ? ` <s>${p.original_price}</s>` : ''} &bull; ${p.category || 'other'}</small>
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn-edit" onclick="openEditModal('${p.id}')">✏️ Edit</button>
+                            <button class="btn-danger" onclick="deleteProduct('${p.id}')">🗑️</button>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch(e) {
+                container.innerHTML = '<p style="color:red;">Error loading products.</p>';
+            }
+        }
+
+        // ===== ADD PRODUCT =====
+        async function addProduct() {
+            const name = document.getElementById('addName').value.trim();
+            const price = document.getElementById('addPrice').value.trim();
+            const affiliate_link = document.getElementById('addAffiliateLink').value.trim();
+            const imagesJson = document.getElementById('addImagesHidden').value;
+
+            if (!name || !price || !affiliate_link) {
+                showMessage('Name, price and affiliate link are required!', 'error');
+                return;
+            }
+            if (!imagesJson) {
+                showMessage('Please upload at least one image!', 'error');
+                return;
+            }
+
+            const data = {
+                name,
+                price,
+                original_price: document.getElementById('addOriginalPrice').value.trim(),
+                images: JSON.parse(imagesJson),
+                affiliate_link,
+                category: document.getElementById('addCategory').value,
+                deal_type: document.getElementById('addDealType').value,
+                description: document.getElementById('addDescription').value.trim()
+            };
+
+            try {
+                const res = await fetch('/api/products', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                showMessage(result.message || result.error, res.ok ? 'success' : 'error');
+
+                if (res.ok) {
+                    // Reset form
+                    document.getElementById('addName').value = '';
+                    document.getElementById('addPrice').value = '';
+                    document.getElementById('addOriginalPrice').value = '';
+                    document.getElementById('addAffiliateLink').value = '';
+                    document.getElementById('addDescription').value = '';
+                    document.getElementById('addImagesHidden').value = '';
+                    document.getElementById('addImagePreview').innerHTML = '';
+                    document.getElementById('addImageUpload').value = '';
+                    loadStats();
+                    loadAdminProducts();
+                }
+            } catch(e) {
+                showMessage('Network error. Try again.', 'error');
+            }
+        }
+
+        // ===== DELETE PRODUCT =====
+        async function deleteProduct(id) {
+            if (!confirm('Delete this product permanently?')) return;
+            try {
+                const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                showMessage(result.message || result.error, res.ok ? 'success' : 'error');
+                loadStats();
+                loadAdminProducts();
+            } catch(e) {
+                showMessage('Error deleting product.', 'error');
+            }
+        }
+
+        // ===== OPEN EDIT MODAL - fetches single product directly =====
+        async function openEditModal(productId) {
+            try {
+                const res = await fetch(`/api/products/${productId}`);
+                const product = await res.json();
+                
+                if (product.error) {
+                    showMessage('Product not found!', 'error');
+                    return;
+                }
+
+                document.getElementById('editProductId').value = product.id;
+                document.getElementById('editName').value = product.name;
+                document.getElementById('editPrice').value = product.price;
+                document.getElementById('editOriginalPrice').value = product.original_price || '';
+                document.getElementById('editAffiliateLink').value = product.affiliate_link || '';
+                document.getElementById('editCategory').value = product.category || 'other';
+                document.getElementById('editDealType').value = product.deal_type || 'normal';
+                document.getElementById('editDescription').value = product.description || '';
+
+                const images = Array.isArray(product.images) ? product.images : (product.images ? [product.images] : []);
+                // Store existing images in hidden field so they are kept if no new upload
+                document.getElementById('editImages').value = JSON.stringify(images);
+                document.getElementById('editImagePreview').innerHTML = images.map(url =>
+                    `<img src="${url}" alt="Current image">`
+                ).join('');
+                // Reset file input
+                document.getElementById('editImageUpload').value = '';
+
+                document.getElementById('editModal').classList.add('active');
+            } catch(e) {
+                showMessage('Error loading product details.', 'error');
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+
+        // ===== SAVE EDITED PRODUCT =====
+        async function saveProduct() {
+            const productId = document.getElementById('editProductId').value;
+            const name = document.getElementById('editName').value.trim();
+            const price = document.getElementById('editPrice').value.trim();
+            const affiliate_link = document.getElementById('editAffiliateLink').value.trim();
+            const imagesJson = document.getElementById('editImages').value;
+
+            if (!name || !price || !affiliate_link) {
+                showMessage('Name, price and affiliate link are required!', 'error');
+                return;
+            }
+
+            const data = {
+                name,
+                price,
+                original_price: document.getElementById('editOriginalPrice').value.trim(),
+                images: imagesJson ? JSON.parse(imagesJson) : [],
+                affiliate_link,
+                category: document.getElementById('editCategory').value,
+                deal_type: document.getElementById('editDealType').value,
+                description: document.getElementById('editDescription').value.trim()
+            };
+
+            try {
+                const res = await fetch(`/api/products/${productId}`, {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                showMessage(result.message || result.error, res.ok ? 'success' : 'error');
+
+                if (res.ok) {
+                    closeEditModal();
+                    loadStats();
+                    loadAdminProducts();
+                }
+            } catch(e) {
+                showMessage('Network error. Try again.', 'error');
+            }
+        }
+
+        // ===== CLOSE MODAL ON OUTSIDE CLICK =====
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) closeEditModal();
+        });
+
+        // ===== SHOW MESSAGE =====
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 4000);
+        }
+
+        // ===== INIT =====
+        loadStats();
+        loadAdminProducts();
+    </script>
+</body>
+</html>
